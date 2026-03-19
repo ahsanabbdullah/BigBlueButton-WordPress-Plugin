@@ -71,7 +71,7 @@ class VideoConferencingWithBBB {
 		} else {
 			$this->version = '3.0.0';
 		}
-		$this->plugin_name = 'video-conferencing-with-bbb';
+		$this->plugin_name = 'vcbbb';
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
@@ -250,12 +250,12 @@ class VideoConferencingWithBBB {
 		$this->loader->add_action( 'wp_ajax_dismissed_notice_handler', $plugin_admin_api, 'dismiss_admin_notices' );
 
 		// Show update notice.
-		$this->loader->add_action( 'in_plugin_update_message-bigbluebutton/bigbluebutton-plugin.php', $plugin_admin, 'bigbluebutton_show_upgrade_notification', 10, 2 );
+		$this->loader->add_action( 'in_plugin_update_message-video-conferencing-with-bbb/video-conferencing-with-bbb.php', $plugin_admin, 'vcbbb_show_upgrade_notification', 10, 2 );
 
 		// Register bbb-rooms and custom fields.
 		$this->loader->add_action( 'init', $plugin_admin_register_custom_types, 'vcbbb_room_as_post_type' );
 		$this->loader->add_action( 'init', $plugin_admin_register_custom_types, 'vcbbb_room_category_as_taxonomy_type' );
-		$this->loader->add_action( 'init', $plugin_admin_register_custom_types, 'vcbbb_flush_rewrite_rules_maybe', 20 );
+		$this->loader->add_action( 'init', $plugin_admin_register_custom_types, 'flush_rewrite_rules_maybe', 20 );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -268,14 +268,14 @@ class VideoConferencingWithBBB {
 		$this->loader->add_filter( 'parent_file', $plugin_admin, 'vcbbb_set_current_menu' );
 
 		// Add room metadata hooks.
-		$this->loader->add_action( 'add_meta_boxes', $plugin_admin_register_custom_types, 'vcbbb_register_room_code_metaboxes' );
-		$this->loader->add_action( 'add_meta_boxes', $plugin_admin_register_custom_types, 'vcbbb_register_record_room_metabox' );
-		$this->loader->add_action( 'add_meta_boxes', $plugin_admin_register_custom_types, 'vcbbb_register_wait_for_moderator_metabox' );
-		$this->loader->add_action( 'save_post_bbb-room', $plugin_admin_api, 'vcbbb_save_bbb_room', 999, 3 );
+		$this->loader->add_action( 'add_meta_boxes', $plugin_admin_register_custom_types, 'register_room_code_metaboxes' );
+		$this->loader->add_action( 'add_meta_boxes', $plugin_admin_register_custom_types, 'register_record_room_metabox' );
+		$this->loader->add_action( 'add_meta_boxes', $plugin_admin_register_custom_types, 'register_wait_for_moderator_metabox' );
+		$this->loader->add_action( 'save_post_bbb-room', $plugin_admin_api, 'save_vcbbb_room', 999, 3 );
 
 		// Show custom fields in rooms table.
 		$this->loader->add_action( 'manage_posts_custom_column', $plugin_admin, 'vcbbb_room_custom_columns', 10, 2 );
-		$this->loader->add_filter( 'manage_bbb-room_posts_columns', $plugin_admin, 'vcbbb_add_custom_room_column_to_list' );
+		$this->loader->add_filter( 'manage_bbb-room_posts_columns', $plugin_admin, 'add_custom_room_column_to_list' );
 
 		// Show taxonomy filter in rooms table
 		$this->loader->add_action( 'restrict_manage_posts', $plugin_admin, 'vcbbb_filter_post_type_by_taxonomy' );
@@ -285,10 +285,10 @@ class VideoConferencingWithBBB {
 		$this->loader->add_action( 'pre_get_posts', $plugin_admin, 'vcbbb_order_rooms' );
 
 		// Start meeting from admin
-		$this->loader->add_action( 'init', $plugin_admin, 'vcbbb_start_meeting_admin' );
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'vcbbb_start_meeting_admin' );
 
 		// Add contextual help tab
-		$this->loader->add_action( 'current_screen', $plugin_admin, 'vcbbb_add_help_tab' );
+		$this->loader->add_action( 'current_screen', $plugin_admin, 'add_help_tab' );
 	}
 
 	/**
@@ -337,8 +337,8 @@ class VideoConferencingWithBBB {
 
 		// Manage shortcodes.
 		$this->loader->add_action( 'init', $plugin_public_shortcode, 'register_shortcodes' );
-		$this->loader->add_action( 'wp_ajax_view_join_form', $plugin_public_room_api, 'vcbbb_get_join_form' );
-		$this->loader->add_action( 'wp_ajax_nopriv_view_join_form', $plugin_public_room_api, 'vcbbb_get_join_form' );
+		$this->loader->add_action( 'wp_ajax_view_join_form', $plugin_public_room_api, 'get_join_form' );
+		$this->loader->add_action( 'wp_ajax_nopriv_view_join_form', $plugin_public_room_api, 'get_join_form' );
 
 		// Register widget.
 		$this->loader->add_action( 'widgets_init', $plugin_public, 'register_widget' );

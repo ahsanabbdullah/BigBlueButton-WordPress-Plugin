@@ -65,7 +65,7 @@ class VCBBB_Activator {
 	 */
 	public static function set_default_roles() {
 		$version          = get_option( 'video_conf_with_bbb_version' );
-		$are_defaults_set = get_option( 'bigbluebutton_default_roles_set' );
+		$are_defaults_set = get_option( 'vcbbb_default_roles_set' );
 
 		// If permissions already set or the version updated check passed
 		if ( true == $are_defaults_set && VIDEO_CONF_WITH_BBB_VERSION === $version ) {
@@ -85,7 +85,7 @@ class VCBBB_Activator {
 		$role_names = array_keys( $roles );
 
 		self::set_default_capabilities_for_each_role( $role_names );
-		update_option( 'bigbluebutton_default_roles_set', true, false );
+		update_option( 'vcbbb_default_roles_set', true, false );
 		update_option( 'video_conf_with_bbb_version', VIDEO_CONF_WITH_BBB_VERSION, false );
 		update_option( 'bbb_flush_incorrect_caps_once', 1, false );
 	}

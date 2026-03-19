@@ -55,7 +55,7 @@ class VCBBB_Register_Custom_Types {
 				'item_updated'             => __( 'Room updated', 'video-conferencing-with-bbb' ),
 			),
 			'taxonomies'      => array( 'bbb-room-category' ),
-			'capability_type' => 'vcbbb_room',
+			'capability_type' => 'bbb_room',
 			'has_archive'     => true,
 			'supports'        => array( 'title', 'editor' ),
 			'rewrite'         => array( 'slug' => 'bbb-room' ),

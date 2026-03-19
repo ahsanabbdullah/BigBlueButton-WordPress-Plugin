@@ -481,8 +481,8 @@ class VCBBB_Api {
 			$url_val  = sanitize_text_field( $settings['vcbbb_url'] );
 			$salt_val = sanitize_text_field( $settings['vcbbb_salt'] );
 		} else {
-			$url_val  = sanitize_text_field( get_option( 'bigbluebutton_url', VIDEO_CONF_WITH_BBB_ENDPOINT ) );
-			$salt_val = sanitize_text_field( get_option( 'bigbluebutton_salt', VIDEO_CONF_WITH_BBB_SALT ) );
+			$url_val  = sanitize_text_field( get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', VIDEO_CONF_WITH_BBB_ENDPOINT ) ) );
+			$salt_val = sanitize_text_field( get_option( 'vcbbb_salt', get_option( 'bigbluebutton_salt', VIDEO_CONF_WITH_BBB_SALT ) ) );
 		}
 
 		$url = $url_val . 'api/' . $type . '?';

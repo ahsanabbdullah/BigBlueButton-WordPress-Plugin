@@ -13,7 +13,7 @@
 
 	<input type="hidden" name="action" value="<?php echo esc_attr( $args['action'] ); ?>">
 	<input data-id="bbb_join_room_id<?php echo esc_attr( $room_id ); ?>" type="hidden" name="room_id" value="<?php echo esc_attr( $room_id ); ?>">
-	<input type="hidden" id="bbb_join_room_meta_nonce" name="bbb_join_room_meta_nonce" value="<?php echo esc_attr( $meta_nonce ); ?>">
+	<input type="hidden" id="vcbbb_join_room_meta_nonce" name="vcbbb_join_room_meta_nonce" value="<?php echo esc_attr( $meta_nonce ); ?>">
 	<input type="hidden" name="current_page" value="<?php echo esc_url( $args['current_page'] ); ?>">
 	<input type="hidden" name="post_id" value="<?php echo esc_attr( $args['post_id'] ); ?>">
 
@@ -45,7 +45,7 @@
 		</div>
 	<?php endif; ?>
 
-	<?php if ( isset( $_REQUEST['bigbluebutton_wait_for_mod'] ) && ( sanitize_text_field( wp_unslash( $_REQUEST['room_id'] ?? '' ) ) == $room_id ) ) : ?>
+	<?php if ( isset( $_REQUEST['vcbbb_wait_for_mod'] ) && ( sanitize_text_field( wp_unslash( $_REQUEST['room_id'] ?? '' ) ) == $room_id ) ) : ?>
 		<div class="bbb-join-form-block">
 			<?php
 				// Sanitize user inputs

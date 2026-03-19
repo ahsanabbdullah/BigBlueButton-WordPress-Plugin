@@ -65,7 +65,7 @@ class VCBBB_Tokens_Helper {
 	public static function join_form_from_tokens_string( $display_helper, $token_string, $author ) {
 		$content             = '';
 		$tokens_arr          = preg_split( '/\,/', $token_string );
-		$meta_nonce          = wp_create_nonce( 'bbb_join_room_meta_nonce' );
+		$meta_nonce          = wp_create_nonce( 'vcbbb_join_room_meta_nonce' );
 		$access_using_code   = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_with_access_code_bbb_room' );
 		$access_as_moderator = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_moderator_bbb_room' );
 		$access_as_viewer    = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_viewer_bbb_room' );
@@ -316,7 +316,7 @@ class VCBBB_Tokens_Helper {
 		$recording_helper = new VCBBB_Recording_Helper();
 
 	if ( isset( $_GET['order'], $_GET['orderby'], $_GET['nonce'] ) 
- && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'bbb_sort_recording_columns_nonce' ) ) {
+ && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'vcbbb_sort_recording_columns_nonce' ) ) {
 		$order   = sanitize_text_field( $_GET['order'] );
 		$orderby = sanitize_text_field( $_GET['orderby'] );
 		return $recording_helper->get_filtered_and_ordered_recordings_based_on_capability( $room_ids, $order, $orderby );

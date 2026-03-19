@@ -51,7 +51,7 @@ class VCBBB_Public_Recording_Api {
 		}
 
 		// Verify nonce
-		if ( ! wp_verify_nonce( $meta_nonce, 'bbb_manage_recordings_nonce' ) ) {
+		if ( ! wp_verify_nonce( $meta_nonce, 'vcbbb_manage_recordings_nonce' ) ) {
 			wp_die( esc_html__( 'Nonce verification failed', 'video-conferencing-with-bbb' ) );
 		}
 
@@ -91,7 +91,7 @@ class VCBBB_Public_Recording_Api {
 			wp_send_json( $response );
 		}
 
-		if ( ! wp_verify_nonce( $meta_nonce, 'bbb_manage_recordings_nonce' ) ) {
+		if ( ! wp_verify_nonce( $meta_nonce, 'vcbbb_manage_recordings_nonce' ) ) {
 			wp_die( esc_html__( 'Nonce verification failed', 'video-conferencing-with-bbb' ) );
 		}
 
@@ -125,7 +125,7 @@ class VCBBB_Public_Recording_Api {
 		$meta_nonce = sanitize_text_field( wp_unslash( $_POST['meta_nonce'] ) );
 		$record_id  = absint( $_POST['record_id'] );
 
-		if ( ! wp_verify_nonce( $meta_nonce, 'bbb_manage_recordings_nonce' ) ) {
+		if ( ! wp_verify_nonce( $meta_nonce, 'vcbbb_manage_recordings_nonce' ) ) {
 			wp_die( esc_html__( 'Nonce verification failed', 'video-conferencing-with-bbb' ) );
 		}
 
@@ -161,7 +161,7 @@ class VCBBB_Public_Recording_Api {
 		$type       = sanitize_text_field( wp_unslash( $_POST['type'] ) );
 		$value      = sanitize_text_field( wp_unslash( $_POST['value'] ) );
 
-		if ( ! wp_verify_nonce( $meta_nonce, 'bbb_manage_recordings_nonce' ) ) {
+		if ( ! wp_verify_nonce( $meta_nonce, 'vcbbb_manage_recordings_nonce' ) ) {
 			wp_die( esc_html__( 'Nonce verification failed', 'video-conferencing-with-bbb' ) );
 		}
 

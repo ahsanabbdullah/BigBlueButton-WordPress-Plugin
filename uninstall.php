@@ -126,9 +126,12 @@ if ( ! class_exists( 'VCBBB_Uninstall' ) ) {
 		 * @since 3.0.0
 		 */
 		private static function remove_options() {
+			delete_option( 'vcbbb_url' );
+			delete_option( 'vcbbb_salt' );
 			delete_option( 'bigbluebutton_url' );
 			delete_option( 'bigbluebutton_salt' );
 			delete_option( 'bigbluebutton_plugin_version' );
+			delete_option( 'vcbbb_default_roles_set' );
 			delete_option( 'bigbluebutton_default_roles_set' );
 			delete_option( 'video_conf_with_bbb_version' );
 			delete_option( 'ee_bb_default_bbb_room' );

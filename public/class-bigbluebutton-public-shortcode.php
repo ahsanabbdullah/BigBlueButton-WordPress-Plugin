@@ -27,6 +27,7 @@ class VCBBB_Public_Shortcode {
 	 */
 	public function register_shortcodes() {
 		add_shortcode( 'video-conferencing-with-bbb', array( $this, 'display_bigbluebutton_shortcode' ) );
+		add_shortcode( 'bigbluebutton', array( $this, 'display_bigbluebutton_shortcode' ) );
 		add_shortcode( 'bigbluebutton_recordings', array( $this, 'display_bigbluebutton_old_recordings_shortcode' ) );
 	}
 

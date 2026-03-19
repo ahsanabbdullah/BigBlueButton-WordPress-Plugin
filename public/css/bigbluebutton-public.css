@@ -59,7 +59,8 @@
 }
 
 .flex-row-5 {
-    width: calc(100% / 4);
+    flex: 1 1 0;
+    min-width: 0;
 }
 
 .flex-row-6 {
@@ -89,11 +90,41 @@
     }
 }
 
-/* Media query for tablet and mobile */
+/* Media query for tablet and mobile - hide header only */
 @media (max-width: 768px) {
-    #bbb-recordings-table .bbb-header {
+    #bbb-recordings-table .bbb-header,
+    #vcbbb-recordings-table .bbb-header {
         display: none;
     }
+}
+
+/* Recordings table - ensure proper flex layout */
+.bbb-table-container .bbb-flex-table {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.bbb-table-container .bbb-flex-table .flex-row {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Manage cell - keep icons in a row */
+.bbb-table-container .vcbbb-recording-row .flex-row:last-child,
+.bbb-table-container .bbb-flex-table .flex-row[role="cell"]:last-of-type {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.25em;
+}
+
+.bbb-table-container .vcbbb-recording-row .flex-row:last-child .bbb-icon,
+.bbb-table-container .vcbbb-recording-row .flex-row:last-child .dashicons {
+    flex-shrink: 0;
 }
 
 .bbb-recording-table-input {
@@ -192,7 +223,7 @@
     margin-top: 10px;
 }
 
-[id^="bbb-recordings-list-"] {
+[id^="bbb-recordings-list-"], [id^="vcbbb-recordings-list-"] {
     margin-bottom: 20px;
 }
 

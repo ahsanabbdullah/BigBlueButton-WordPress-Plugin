@@ -58,8 +58,8 @@ function copyToClipboard(elem) {
     /* Copy the text inside the text field */
     navigator.clipboard.writeText(elem.getAttribute('data-value'));
 
-    var tooltip = jQuery(elem).find('.shortcode-tooltip').html( __('Copied:', 'bigbluebutton') );
-    var tooltip = jQuery(elem).find('.invite-tooltip').html( __('Copied:', 'bigbluebutton') );
+    var tooltip = jQuery(elem).find('.shortcode-tooltip').html( __('Copied:', 'video-conferencing-with-bbb') );
+    var tooltip = jQuery(elem).find('.invite-tooltip').html( __('Copied:', 'video-conferencing-with-bbb') );
     
     /* Open Help screen when adding shortcode to page */
     if( jQuery(elem).find('.shortcode-tooltip').length != 0 ) {
@@ -90,6 +90,6 @@ function copyToClipboard(elem) {
 }
 
 function copyClipboardExit(elem) {
-    var tooltip = jQuery(elem).find('.shortcode-tooltip').html( __('Copy Shortcode', 'bigbluebutton') );
-    var tooltip = jQuery(elem).find('.invite-tooltip').html( __('Copy Invite URL', 'bigbluebutton') );
+    var tooltip = jQuery(elem).find('.shortcode-tooltip').html( __('Copy Shortcode', 'video-conferencing-with-bbb') );
+    var tooltip = jQuery(elem).find('.invite-tooltip').html( __('Copy Invite URL', 'video-conferencing-with-bbb') );
 }

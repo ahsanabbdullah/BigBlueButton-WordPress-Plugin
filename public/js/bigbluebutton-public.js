@@ -81,17 +81,17 @@ const { __, _x, _n, _nx } = wp.i18n
         // check if moderator has entered the meeting yet
         jQuery(document).on('heartbeat-send', function (event, data) {
             if (0 < $('#bbb-wait-for-mod-msg').length) {
-                data.check_bigbluebutton_meeting_state = true
-                data.bigbluebutton_room_id = $('#bbb-wait-for-mod-msg').data(
+                data.check_vcbbb_meeting_state = true
+                data.vcbbb_room_id = $('#bbb-wait-for-mod-msg').data(
                     'room-id'
                 )
                 if ($('#bbb-wait-for-mod-msg').data('temp-room-pass')) {
-                    data.bigbluebutton_temp_room_pass = $(
+                    data.vcbbb_temp_room_pass = $(
                         '#bbb-wait-for-mod-msg'
                     ).data('temp-room-pass')
                 }
                 if ($('#bbb-wait-for-mod-msg').data('room-username')) {
-                    data.bigbluebutton_room_username = $(
+                    data.vcbbb_room_username = $(
                         '#bbb-wait-for-mod-msg'
                     ).data('room-username')
                 }
@@ -100,10 +100,10 @@ const { __, _x, _n, _nx } = wp.i18n
 
         // handle response to checking if moderator has entered the meeting yet
         jQuery(document).on('heartbeat-tick', function (event, data) {
-            if (!data.bigbluebutton_admin_has_entered) {
+            if (!data.vcbbb_admin_has_entered) {
                 return
             }
-            window.location.replace(data.bigbluebutton_join_url)
+            window.location.replace(data.vcbbb_join_url)
         })
 
         // update join room form with new room id and access code input, if necessary
@@ -275,7 +275,7 @@ const { __, _x, _n, _nx } = wp.i18n
                 window.confirm(
                     __(
                         'Do you really want to delete this recording?',
-                        'bigbluebutton'
+                        'video-conferencing-with-bbb'
                     )
                 )
             ) {
@@ -378,13 +378,13 @@ function copyToClipboard(elem) {
 
     var tooltip = jQuery(elem)
         .find('.recording-url-tooltip')
-        .html(__('Copied:', 'bigbluebutton'))
+        .html(__('Copied:', 'video-conferencing-with-bbb'))
 }
 
 function copyClipboardExit(elem) {
     var tooltip = jQuery(elem)
         .find('.recording-url-tooltip')
-        .html(__('Share Recording URL', 'bigbluebutton'))
+        .html(__('Share Recording URL', 'video-conferencing-with-bbb'))
 }
 
 function joinBBBRoomFromPage(URL, fullscreen = 0, self) {

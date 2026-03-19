@@ -113,11 +113,18 @@ class VCBBB_Admin {
 			__( 'BBB Rooms', 'video-conferencing-with-bbb' ),
 			'edit_bbb_rooms',
 			'vcbbb_room',
-			'',
+			array( $this, 'vcbbb_room_menu_page' ),
 			'dashicons-video-alt2',
 			6
 		);
-
+		add_submenu_page(
+			'vcbbb_room',
+			__( 'All Rooms', 'video-conferencing-with-bbb' ),
+			__( 'All Rooms', 'video-conferencing-with-bbb' ),
+			'edit_bbb_rooms',
+			'vcbbb_room',
+			array( $this, 'vcbbb_room_menu_page' )
+		);
 		if ( ! VCBBB_Admin_Helper::check_posts() ) {
 			add_submenu_page(
 				'vcbbb_room',
@@ -159,6 +166,24 @@ class VCBBB_Admin {
 				array( $this, 'redirect_to_pro_version' )
 			);
 		}
+	}
+
+
+	/**
+	 * Redirect parent menu to rooms list when admin.php?page=vcbbb_room is accessed.
+	 *
+	 * @since   3.0.0
+	 */
+	public function vcbbb_room_menu_page() {
+		$url = admin_url( 'edit.php?post_type=bbb-room' );
+		if ( ! headers_sent() ) {
+			wp_safe_redirect( $url );
+			exit;
+		}
+		echo '<script>window.location.replace("' . esc_js( $url ) . '");</script>';
+		echo '<noscript><meta http-equiv="refresh" content="0;url=' . esc_url( $url ) . '"></noscript>';
+		echo '<p>' . esc_html__( 'Redirecting to rooms...', 'video-conferencing-with-bbb' ) . '</p>';
+		exit;
 	}
 
 	/**
@@ -345,7 +370,7 @@ class VCBBB_Admin {
 	public function display_room_server_settings() {
 		$change_success = $this->room_server_settings_change();
 		$bbb_settings   = $this->fetch_room_server_settings();
-		$meta_nonce     = wp_create_nonce( 'bbb_edit_server_settings_meta_nonce' );
+		$meta_nonce     = wp_create_nonce( 'vcbbb_edit_server_settings_meta_nonce' );
 		$user           = get_userdata( get_current_user_id() );
 		$user_email     = ( isset( $user->user_email ) ? $user->user_email : '' );
 		$display_name   = ( isset( $user->display_name ) ? $user->display_name : '' );
@@ -384,8 +409,8 @@ class VCBBB_Admin {
 	 */
 	public function fetch_room_server_settings() {
 		$settings = array(
-			'vcbbb_url'          => get_option( 'bigbluebutton_url', VIDEO_CONF_WITH_BBB_ENDPOINT ),
-			'vcbbb_salt'         => get_option( 'bigbluebutton_salt', VIDEO_CONF_WITH_BBB_SALT ),
+			'vcbbb_url'          => get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', VIDEO_CONF_WITH_BBB_ENDPOINT ) ),
+			'vcbbb_salt'         => get_option( 'vcbbb_salt', get_option( 'bigbluebutton_salt', VIDEO_CONF_WITH_BBB_SALT ) ),
 			'vcbbb_default_url'  => VIDEO_CONF_WITH_BBB_ENDPOINT,
 			'vcbbb_default_salt' => VIDEO_CONF_WITH_BBB_SALT,
 		);
@@ -401,9 +426,9 @@ class VCBBB_Admin {
 	 * @param   Array  $current_plugin_metadata    The plugin metadata of the current version of the plugin.
 	 * @param   Object $new_plugin_metadata        The plugin metadata of the new version of the plugin.
 	 */
-	public function bigbluebutton_show_upgrade_notification( $current_plugin_metadata, $new_plugin_metadata = null ) {
+	public function vcbbb_show_upgrade_notification( $current_plugin_metadata, $new_plugin_metadata = null ) {
 		if ( ! $new_plugin_metadata ) {
-			$new_plugin_metadata = $this->bigbluebutton_update_metadata( $current_plugin_metadata['slug'] );
+			$new_plugin_metadata = $this->vcbbb_update_metadata( $current_plugin_metadata['slug'] );
 		}
 		// Check "upgrade_notice".
 		if ( isset( $new_plugin_metadata->upgrade_notice ) && strlen( trim( $new_plugin_metadata->upgrade_notice ) ) > 0 ) {
@@ -420,7 +445,7 @@ class VCBBB_Admin {
 	 * @param   String $plugin_slug            The slug of the old plugin version.
 	 * @return  Object $new_plugin_metadata    The metadata of the new plugin version.
 	 */
-	private function bigbluebutton_update_metadata( $plugin_slug ) {
+	private function vcbbb_update_metadata( $plugin_slug ) {
 		$plugin_updates = get_plugin_updates();
 		foreach ( $plugin_updates as $update ) {
 			if ( $update->update->slug === $plugin_slug ) {
@@ -441,10 +466,10 @@ class VCBBB_Admin {
 	 *                          3 - bad bigbluebutton settings configuration
 	 */
 	private function room_server_settings_change() {
-		if ( ! empty( $_POST['action'] ) && 'vcbbb_general_settings' == $_POST['action'] && wp_verify_nonce( sanitize_text_field( $_POST['bbb_edit_server_settings_meta_nonce'] ), 'bbb_edit_server_settings_meta_nonce' ) ) {
-			if ( isset( $_POST['bbb_url'] ) ) {
-				$bbb_url  = sanitize_text_field( $_POST['bbb_url'] );
-				$bbb_salt = sanitize_text_field( $_POST['bbb_salt'] );
+		if ( ! empty( $_POST['action'] ) && 'vcbbb_general_settings' == $_POST['action'] && wp_verify_nonce( sanitize_text_field( $_POST['vcbbb_edit_server_settings_meta_nonce'] ), 'vcbbb_edit_server_settings_meta_nonce' ) ) {
+			if ( isset( $_POST['vcbbb_url'] ) ) {
+				$bbb_url  = sanitize_text_field( $_POST['vcbbb_url'] );
+				$bbb_salt = sanitize_text_field( $_POST['vcbbb_salt'] );
 
 				$bbb_url .= ( substr( $bbb_url, -1 ) == '/' ? '' : '/' );
 
@@ -459,8 +484,8 @@ class VCBBB_Admin {
 				// 	return 2;
 				// }
 
-				update_option( 'bigbluebutton_url', $bbb_url, false );
-				update_option( 'bigbluebutton_salt', $bbb_salt, false );
+				update_option( 'vcbbb_url', $bbb_url, false );
+				update_option( 'vcbbb_salt', $bbb_salt, false );
 			}
 	
 			do_action( 'vcbbb_settings_form_save' );
@@ -476,7 +501,7 @@ class VCBBB_Admin {
 	 * @since   3.0.0
 	 */
 	public function check_for_heartbeat_script() {
-		$bbb_warning_type = 'bbb-missing-heartbeat-api-notice';
+		$bbb_warning_type = 'vcbbb-missing-heartbeat-api-notice';
 		if ( ! wp_script_is( 'heartbeat', 'registered' ) && ! get_option( 'dismissed-' . $bbb_warning_type, false ) ) {
 			$bbb_admin_warning_message = __( 'BigBlueButton works best with the heartbeat API enabled. Please enable it.', 'video-conferencing-with-bbb' );
 			$bbb_admin_notice_nonce    = wp_create_nonce( $bbb_warning_type );
@@ -503,7 +528,7 @@ class VCBBB_Admin {
 			}
 		}
 
-		$bbb_warning_type = 'bbb-review-plugin';
+		$bbb_warning_type = 'vcbbb-review-plugin';
 		if ( VCBBB_Admin_Helper::check_posts() ) {
 			$bbb_admin_review_message = '<strong>' . VIDEO_CONF_WITH_BBB_PLUGIN_NAME . ':</strong> You have reached the max room create limit. The free version allows to add only 2 new BBB rooms. To create unlimited rooms activate the Pro version';
 			$bbb_admin_notice_nonce   = wp_create_nonce( $bbb_warning_type );
@@ -512,7 +537,7 @@ class VCBBB_Admin {
 			include 'partials/bigbluebutton-admin-notice.php';
 		}
 
-		$bbb_warning_type = 'bbb-review-plugin';
+		$bbb_warning_type = 'vcbbb-review-plugin';
 		if ( ! get_option( 'dismissed-' . $bbb_warning_type, false ) ) {
 			$bbb_admin_review_message = '<strong>' . VIDEO_CONF_WITH_BBB_PLUGIN_NAME . ":</strong> It's critical for us to know how the plugin is working out for you.";
 			$bbb_admin_notice_nonce   = wp_create_nonce( $bbb_warning_type );
@@ -631,14 +656,20 @@ if ( ! wp_verify_nonce( $nonce, 'start_meeting' ) ) {
     wp_die( esc_html__( 'Security check failed', 'video-conferencing-with-bbb' ) );
 }
 
-		$access_code = sanitize_text_field( $_GET['code'] );
-		$room_id     = sanitize_text_field( $_GET['room_id'] );
+		$access_code = sanitize_text_field( wp_unslash( $_GET['code'] ) );
+		$room_id     = absint( $_GET['room_id'] );
 		$user        = wp_get_current_user();
-		if ( $user && $user->display_name ) {
-			$username = $user->display_name;
+		$username    = ( $user && ! empty( $user->display_name ) ) ? $user->display_name : ( $user && ! empty( $user->user_login ) ? $user->user_login : __( 'Moderator', 'video-conferencing-with-bbb' ) );
+
+		if ( empty( $access_code ) || ! $room_id ) {
+			wp_die( esc_html__( 'Invalid room or access code.', 'video-conferencing-with-bbb' ) );
 		}
 
 		$join_url = VCBBB_Api::get_join_meeting_url( $room_id, $username, $access_code );
+		if ( empty( $join_url ) ) {
+			wp_die( esc_html__( 'Unable to create or join the meeting. Please check your BigBlueButton server settings.', 'video-conferencing-with-bbb' ) );
+		}
+
 		wp_redirect( $join_url );
 		exit;
 	}

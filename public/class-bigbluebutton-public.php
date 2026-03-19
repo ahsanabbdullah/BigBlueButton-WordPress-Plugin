@@ -127,7 +127,7 @@ class VCBBB_Public {
 	 * @since   3.0.0
 	 */
 	public function enqueue_heartbeat() {
-		if ( get_query_var( 'bigbluebutton_wait_for_mod' ) ) {
+		if ( get_query_var( 'vcbbb_wait_for_mod' ) ) {
 			wp_enqueue_script( 'heartbeat' );
 		}
 	}
@@ -141,7 +141,7 @@ class VCBBB_Public {
 	 * @return  Array $vars List of vars that can be queried, including BigBlueButton variables.
 	 */
 	public function add_query_vars( $vars ) {
-		$vars[] = 'bigbluebutton_wait_for_mod';
+		$vars[] = 'vcbbb_wait_for_mod';
 		return $vars;
 	}
 

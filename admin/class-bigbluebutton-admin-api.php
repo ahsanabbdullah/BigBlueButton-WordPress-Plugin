@@ -34,11 +34,11 @@ class VCBBB_Admin_Api {
 		}
 
 		if ( $this->can_save_room() ) {
-			$moderator_code = sanitize_text_field( $_POST['vcbbb-moderator-code'] );
-			$viewer_code    = sanitize_text_field( $_POST['vcbbb-viewer-code'] );
-			$recordable     = ( array_key_exists( 'vcbbb-room-recordable', $_POST ) && sanitize_text_field( $_POST['vcbbb-room-recordable'] ) == 'checked' );
+			$moderator_code = sanitize_text_field( $_POST['bbb-moderator-code'] );
+			$viewer_code    = sanitize_text_field( $_POST['bbb-viewer-code'] );
+			$recordable     = ( array_key_exists( 'bbb-room-recordable', $_POST ) && sanitize_text_field( $_POST['bbb-room-recordable'] ) == 'checked' );
 
-			$wait_for_mod = ( isset( $_POST['vcbbb-room-wait-for-moderator'] ) && sanitize_text_field( $_POST['vcbbb-room-wait-for-moderator'] ) == 'checked' );
+			$wait_for_mod = ( isset( $_POST['bbb-room-wait-for-moderator'] ) && sanitize_text_field( $_POST['bbb-room-wait-for-moderator'] ) == 'checked' );
 
 			// Ensure neither code is empty.
 			if ( '' == $moderator_code ) {
@@ -54,16 +54,16 @@ class VCBBB_Admin_Api {
 			}
 
 			// Add room codes to postmeta data.
-			update_post_meta( $post_id, 'vcbbb-room-moderator-code', $moderator_code );
-			update_post_meta( $post_id, 'vcbbb-room-viewer-code', $viewer_code );
+			update_post_meta( $post_id, 'bbb-room-moderator-code', $moderator_code );
+			update_post_meta( $post_id, 'bbb-room-viewer-code', $viewer_code );
 
-			if ( ! get_post_meta( $post_id, 'vcbbb-room-meeting-id', true ) ) {
-				update_post_meta( $post_id, 'vcbbb-room-meeting-id', sha1( home_url() . VCBBB_Admin_Helper::generate_random_code( 12 ) ) );
+			if ( ! get_post_meta( $post_id, 'bbb-room-meeting-id', true ) ) {
+				update_post_meta( $post_id, 'bbb-room-meeting-id', sha1( home_url() . VCBBB_Admin_Helper::generate_random_code( 12 ) ) );
 			}
 
 			// Update room recordable value.
-			update_post_meta( $post_id, 'vcbbb-room-recordable', ( $recordable ? 'true' : 'false' ) );
-			update_post_meta( $post_id, 'vcbbb-room-wait-for-moderator', ( $wait_for_mod ? 'true' : 'false' ) );
+			update_post_meta( $post_id, 'bbb-room-recordable', ( $recordable ? 'true' : 'false' ) );
+			update_post_meta( $post_id, 'bbb-room-wait-for-moderator', ( $wait_for_mod ? 'true' : 'false' ) );
 
 			do_action( 'vcbbb_room_save_meta', $post_id );
 		} else {
@@ -91,10 +91,10 @@ class VCBBB_Admin_Api {
 	 * @since 3.0.0
 	 */
 	public function can_save_room() {
-		return ( isset( $_POST['vcbbb-moderator-code'] ) &&
-			isset( $_POST['vcbbb-viewer-code'] ) &&
-			isset( $_POST['vcbbb-room-moderator-code-nonce'] ) &&
-			wp_verify_nonce( $_POST['vcbbb-room-moderator-code-nonce'], 'vcbbb-room-moderator-code-nonce' ) &&
+		return ( isset( $_POST['bbb-moderator-code'] ) &&
+			isset( $_POST['bbb-viewer-code'] ) &&
+			isset( $_POST['bbb-room-moderator-code-nonce'] ) &&
+			wp_verify_nonce( $_POST['bbb-room-moderator-code-nonce'], 'bbb-room-moderator-code-nonce' ) &&
 			current_user_can( 'create_recordable_bbb_room' ) );
 	}
 }

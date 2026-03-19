@@ -269,16 +269,16 @@ class VCBBB_Migration {
 
 			// Update settings.
 			if ( ! get_option( 'mt_bbb_url' ) ) {
-				update_option( 'bigbluebutton_url', VIDEO_CONF_WITH_BBB_ENDPOINT, false );
+				update_option( 'vcbbb_url', VIDEO_CONF_WITH_BBB_ENDPOINT, false );
 			} else {
-				update_option( 'bigbluebutton_url', get_option( 'mt_bbb_url' ), false );
+				update_option( 'vcbbb_url', get_option( 'mt_bbb_url' ), false );
 				delete_option( 'mt_bbb_url' );
 			}
 
 			if ( ! get_option( 'mt_salt' ) ) {
-				update_option( 'bigbluebutton_salt', VIDEO_CONF_WITH_BBB_SALT, false );
+				update_option( 'vcbbb_salt', VIDEO_CONF_WITH_BBB_SALT, false );
 			} else {
-				update_option( 'bigbluebutton_salt', get_option( 'mt_salt' ), false );
+				update_option( 'vcbbb_salt', get_option( 'mt_salt' ), false );
 				delete_option( 'mt_salt' );
 			}
 

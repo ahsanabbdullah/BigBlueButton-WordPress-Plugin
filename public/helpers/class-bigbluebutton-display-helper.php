@@ -57,10 +57,10 @@ class VCBBB_Display_Helper {
 		$is_join_web                      = 1;
 		$start_time                       = get_post_meta( $room_id, 'bbb-start-time', true );
 		$args['action']                   = 'join_room';
-		$args['bbb_join_room_meta_nonce'] = sanitize_text_field( $meta_nonce );
+		$args['vcbbb_join_room_meta_nonce'] = sanitize_text_field( $meta_nonce );
 		$args['current_page']             = get_permalink();
 		$args['post_id']                  = sanitize_text_field( ( isset( $post->ID ) ? $post->ID : 0 ) );
-		$url                              = get_permalink() . '?' . http_build_query( $args );
+		$url                              = add_query_arg( $args, get_permalink() );
 		$_REQUEST['room_id']              = ( isset( $_REQUEST['room_id'] ) ? $_REQUEST['room_id'] : 0 );
 
 		if ( $start_time ) {
@@ -137,7 +137,7 @@ class VCBBB_Display_Helper {
 		$recording_description_exist = null;
 		$sort_fields                 = $this->set_order_by_field();
 		ob_start();
-		$meta_nonce                                     = wp_create_nonce( 'bbb_manage_recordings_nonce' );
+		$meta_nonce                                     = wp_create_nonce( 'vcbbb_manage_recordings_nonce' );
 		$date_format                                    = ( get_option( 'date_format' ) ? get_option( 'date_format' ) : 'Y-m-d' );
 		$default_bbb_recording_format                   = 'presentation';
 		$bbb_recording_display_text                     = new stdClass();
@@ -166,14 +166,14 @@ class VCBBB_Display_Helper {
 	private function set_order_by_field() {
 		$sort_asc_classes   = 'dashicons dashicons-arrow-up-alt2 bbb-header-icon';
 		$sort_desc_classes  = 'dashicons dashicons-arrow-down-alt2 bbb-header-icon';
-		$sort_meta_nounce   = wp_create_nonce( 'bbb_sort_recording_columns_nonce' );
+		$sort_meta_nounce   = wp_create_nonce( 'vcbbb_sort_recording_columns_nonce' );
 		$custom_sort_fields = array(
 			'name'        => null,
 			'description' => null,
 			'date'        => null,
 		);
 
-		if ( isset( $_GET['order'] ) && isset( $_GET['orderby'] ) && isset( $_GET['nonce'] ) && wp_verify_nonce( $_GET['nonce'], 'bbb_sort_recording_columns_nonce' ) ) {
+		if ( isset( $_GET['order'] ) && isset( $_GET['orderby'] ) && isset( $_GET['nonce'] ) && wp_verify_nonce( $_GET['nonce'], 'vcbbb_sort_recording_columns_nonce' ) ) {
 			$new_direction    = ( sanitize_text_field( $_GET['order'] ) == 'asc' ? 'desc' : 'asc' );
 			$new_sort_classes = ( 'asc' == $new_direction ? $sort_desc_classes : $sort_asc_classes ) . ' bbb-current-sort-icon';
 			$selected_field   = sanitize_text_field( $_GET['orderby'] );

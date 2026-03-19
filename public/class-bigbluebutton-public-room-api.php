@@ -57,7 +57,7 @@ class VCBBB_Public_Room_Api {
 	 * @since   3.0.0
 	 */
 	public function vcbbb_user_join_room() {
-		if ( isset( $_GET['room_id'] ) && ! empty( $_GET['action'] ) && 'join_room' == $_GET['action'] && wp_verify_nonce( sanitize_text_field( $_GET['bbb_join_room_meta_nonce'] ), 'bbb_join_room_meta_nonce' ) ) {
+		if ( isset( $_GET['room_id'] ) && ! empty( $_GET['action'] ) && 'join_room' == $_GET['action'] && wp_verify_nonce( sanitize_text_field( $_GET['vcbbb_join_room_meta_nonce'] ), 'vcbbb_join_room_meta_nonce' ) ) {
 			$room_id                  = sanitize_text_field( $_GET['room_id'] );
 			$user                     = wp_get_current_user();
 			$entry_code               = '';
@@ -145,18 +145,18 @@ public function get_join_form() {
 	 * @return  Array $response   Response that says if the admin has entered the meeting or not.
 	 */
 	public function vcbbb_check_meeting_state( $response, $data = array() ) {
-		if ( empty( $data['check_bigbluebutton_meeting_state'] ) || empty( $data['bigbluebutton_room_id'] ) ) {
+		if ( empty( $data['check_vcbbb_meeting_state'] ) || empty( $data['vcbbb_room_id'] ) ) {
 			return $response;
 		}
 
 		$username                                    = '';
-		$room_id                                     = (int) $data['bigbluebutton_room_id'];
+		$room_id                                     = (int) $data['vcbbb_room_id'];
 		$entry_code                                  = strval( get_post_meta( $room_id, 'bbb-room-viewer-code', true ) );
-		$response['bigbluebutton_admin_has_entered'] = false;
+		$response['vcbbb_admin_has_entered'] = false;
 
 		if ( ! VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_viewer_bbb_room' ) ) {
-			$temp_entry_pass = sanitize_text_field( $data['bigbluebutton_temp_room_pass'] );
-			if ( ! wp_verify_nonce( $temp_entry_pass, 'bigbluebutton_entry_code_' . $entry_code ) ) {
+			$temp_entry_pass = sanitize_text_field( $data['vcbbb_temp_room_pass'] );
+			if ( ! wp_verify_nonce( $temp_entry_pass, 'vcbbb_entry_code_' . $entry_code ) ) {
 				$entry_code = '';
 			}
 		}
@@ -164,14 +164,14 @@ public function get_join_form() {
 		if ( is_user_logged_in() ) {
 			$username = wp_get_current_user()->display_name;
 		} else {
-			$username = sanitize_text_field( $data['bigbluebutton_room_username'] );
+			$username = sanitize_text_field( $data['vcbbb_room_username'] );
 		}
 
 		$join_url = VCBBB_Api::get_join_meeting_url( $room_id, $username, $entry_code );
 
 		if ( VCBBB_Api::is_meeting_running( $room_id ) ) {
-			$response['bigbluebutton_admin_has_entered'] = true;
-			$response['bigbluebutton_join_url']          = $join_url;
+			$response['vcbbb_admin_has_entered'] = true;
+			$response['vcbbb_join_url']          = $join_url;
 		}
 
 		return $response;
@@ -213,7 +213,7 @@ public function get_join_form() {
 				}
 				// Make user wait for moderator to join room.
 				if ( ! $access_as_viewer ) {
-					$query['temp_entry_pass'] = wp_create_nonce( 'bigbluebutton_entry_code_' . $entry_code );
+					$query['temp_entry_pass'] = wp_create_nonce( 'vcbbb_entry_code_' . $entry_code );
 				}
 				wp_redirect( add_query_arg( $query, $return_url ) );
 				exit;

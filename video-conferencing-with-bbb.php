@@ -192,9 +192,9 @@ add_action(
 	'plugins_loaded',
 	function () {
 		// Full conflict check with detailed messages.
-		if ( ! function_exists( 'vcbbb_run_video_conf_bbb' ) && ! vcbbb_video_conf_check_conflict() ) {
+		if ( ! function_exists( 'vcbbb_run_video_conf_bbb' ) && ! video_conf_vcbbb_check_conflict() ) {
 			function vcbbb_run_video_conf_bbb() {
-				$plugin = new VCBBB_Plugin();
+				$plugin = new VideoConferencingWithBBB();
 				$plugin->run();
 			}
 			vcbbb_run_video_conf_bbb();

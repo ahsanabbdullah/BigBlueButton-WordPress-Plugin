@@ -13,13 +13,13 @@
 			</nav>		
 			<form id="bbb-general-settings-form" method="POST" action="" enctype="multipart/form-data">
 				<input type="hidden" name="action" value="vcbbb_general_settings">
-				<input type="hidden" id="bbb_edit_server_settings_meta_nonce" name="bbb_edit_server_settings_meta_nonce" value="<?php echo $meta_nonce; ?>">
+				<input type="hidden" id="vcbbb_edit_server_settings_meta_nonce" name="vcbbb_edit_server_settings_meta_nonce" value="<?php echo $meta_nonce; ?>">
 				 <div class="tab-content">
 					<?php if ( null === $tab ) : ?>
 						<?php  do_action( 'vcbbb_setup_tab_content' ); ?>
 						<div class="bbb-row">
 							<p id="bbb_endpoint_label" class="bbb-col-left bbb-important-label"><?php esc_html_e( 'EndPoint URL', 'video-conferencing-with-bbb' ); ?>: </p>
-							<input class="bbb-col-right" type="text" name="bbb_url" size=50 value="<?php echo esc_url( $bbb_settings['vcbbb_url'] ); ?>" aria-labelledby="bbb_endpoint_label">
+							<input class="bbb-col-right" type="text" name="vcbbb_url" size=50 value="<?php echo esc_url( $bbb_settings['vcbbb_url'] ); ?>" aria-labelledby="bbb_endpoint_label">
 						</div>
 						<div class="bbb-row">
 							<p class="bbb-col-left"></p>
@@ -27,7 +27,7 @@
 						</div>
 						<div class="bbb-row">
 							<p id="bbb_shared_secret_label" class="bbb-col-left bbb-important-label"><?php esc_html_e( 'Shared Secret/Salt', 'video-conferencing-with-bbb' ); ?>: </p>
-							<input class="bbb-col-right" type="text" name="bbb_salt" size=50 value="<?php echo esc_attr( $bbb_settings['vcbbb_salt'] ); ?>" aria-labelledby="bbb_shared_secret_label">
+							<input class="bbb-col-right" type="text" name="vcbbb_salt" size=50 value="<?php echo esc_attr( $bbb_settings['vcbbb_salt'] ); ?>" aria-labelledby="bbb_shared_secret_label">
 						</div>
 						<div class="bbb-row">
 							<p class="bbb-col-left"></p>
@@ -76,7 +76,7 @@
 							</div>
 						<?php } ?>
 					<?php else : ?>
-						<?php  ('vcbbb_settings_tab_content' ); ?>
+						<?php  do_action( 'vcbbb_settings_tab_content', $tab ); ?>
 					<?php endif; ?>
 				 </div>
 				<input class="bbb-settings-btn bbb-settings-submit" type="submit" value="<?php esc_html_e( 'Save Changes', 'video-conferencing-with-bbb' ); ?>"/>

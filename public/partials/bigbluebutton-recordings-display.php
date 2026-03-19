@@ -1,9 +1,9 @@
-<div id="vcbbb-recordings-list-<?php echo esc_attr( $room_id ); ?>">
+<div id="bbb-recordings-list-<?php echo esc_attr( $room_id ); ?>">
 	<?php if ( empty( $recordings ) ) { ?>
-		<p id="vcbbb-no-recordings-msg"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
+		<p id="bbb-no-recordings-msg"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
 	<?php } else { ?>
-		<p id="vcbbb-no-recordings-msg" style="display:none;"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
-		<div id="vcbbb-recordings-table" class="bbb-table-container vcbbb-table-container" role="table">
+		<p id="bbb-no-recordings-msg" style="display:none;"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
+		<div id="bbb-recordings-table" class="bbb-table-container vcbbb-table-container" role="table">
 			<div class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo $columns; ?> bbb-header vcbbb-header" role="rowgroup">
 				<!-- <div class="flex-row flex-row-<?php echo $columns; ?> first" role="columnheader"><?php esc_html_e( 'Meeting', 'video-conferencing-with-bbb' ); ?></div> -->
 				<a href="<?php echo esc_url( $sort_fields['name']->url ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?> <?php echo esc_html( $sort_fields['name']->header_classes ); ?>" role="columnheader">
@@ -28,9 +28,9 @@
 				<?php } ?>
 			</div>
 			<?php foreach ( $recordings as $recording ) { ?>
-				<div id="vcbbb-recording-<?php echo esc_attr( $recording->recordID ); ?>" class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo esc_attr( $columns ); ?> vcbbb-recording-row" role="rowgroup">
+				<div id="bbb-recording-<?php echo esc_attr( $recording->recordID ); ?>" class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo esc_attr( $columns ); ?> bbb-recording-row" role="rowgroup">
 					<!-- <div class="flex-row flex-row-<?php echo esc_attr( $columns ); ?> first" role="cell"><?php echo esc_html( urldecode( $recording->name ) ); ?></div> -->
-					<div id="vcbbb-recording-name-<?php echo esc_attr( $recording->recordID ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
+					<div id="bbb-recording-name-<?php echo esc_attr( $recording->recordID ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
 						<?php echo esc_html( urldecode( $recording->metadata->{'recording-name'} ) ); ?>
 						<?php if ( $manage_bbb_recordings ) { ?>
 							<i id="edit-recording-name-<?php echo esc_attr( $recording->recordID ); ?>"
@@ -44,7 +44,7 @@
 						<?php } ?>
 					</div>
 					<?php if ( $recording_description_exist ) : ?>
-						<div id="vcbbb-recording-description-<?php echo esc_attr( $recording->recordID ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
+						<div id="bbb-recording-description-<?php echo esc_attr( $recording->recordID ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
 							<?php echo esc_html( urldecode( $recording->metadata->{'recording-description'} ) ); ?>
 							<?php if ( $manage_bbb_recordings ) { ?>
 								<i id="edit-recording-description-<?php echo esc_attr( $recording->recordID ); ?>"
@@ -72,7 +72,7 @@
 						}
 					?>
 					<div class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
-						<div id="vcbbb-recording-links-block-<?php echo esc_attr( $recording->recordID ); ?>" class="vcbbb-recording-link-block" style="<?php echo ( $recording->published == 'false' ? 'display:none;' : '' ); ?>">
+						<div id="bbb-recording-links-block-<?php echo esc_attr( $recording->recordID ); ?>" class="bbb-recording-link-block" style="<?php echo ( $recording->published == 'false' ? 'display:none;' : '' ); ?>">
 							<?php if ( ! empty( $recording_url ) ) : ?>
 								<button class="vcbbb-button vcbbb-btn-join button button-primary" onclick="window.open('<?php echo esc_url( $recording_url ); ?>', '_blank')"><?php esc_html_e( 'View Recording', 'video-conferencing-with-bbb' ); ?></button>
 							<?php endif; ?>

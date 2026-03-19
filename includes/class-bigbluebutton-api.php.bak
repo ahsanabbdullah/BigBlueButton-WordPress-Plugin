@@ -42,10 +42,6 @@ class VCBBB_Api {
 		$moderator_code = get_post_meta( $rid, 'bbb-room-moderator-code', true );
 		$viewer_code    = get_post_meta( $rid, 'bbb-room-viewer-code', true );
 		$recordable     = get_post_meta( $rid, 'bbb-room-recordable', true );
-		if ( '' === $recordable ) {
-			$recordable = get_post_meta( $rid, 'vcbbb-room-recordable', true );
-		}
-		$record_param   = ( 'true' === $recordable ) ? 'true' : 'false';
 		$meeting_id     = get_post_meta( $rid, 'bbb-room-meeting-id', true );
 		$arr_params     = apply_filters(
 			'vcbbb_create_room_params',
@@ -56,7 +52,7 @@ class VCBBB_Api {
 				'attendeePW'  => rawurlencode( $viewer_code ),
 				'moderatorPW' => rawurlencode( $moderator_code ),
 				'logoutURL'   => esc_url_raw( $logout_url ),
-				'record'      => $record_param,
+				'record'      => esc_attr( $recordable ),
 			)
 		);
 
@@ -232,16 +228,10 @@ class VCBBB_Api {
 		$meeting_ids = '';
 
 		foreach ( $room_ids as $rid ) {
-			$mid = get_post_meta( sanitize_text_field( $rid ), 'bbb-room-meeting-id', true );
-			if ( ! empty( trim( $mid ) ) ) {
-				$meeting_ids .= $mid . ',';
-			}
+			$meeting_ids .= get_post_meta( sanitize_text_field( $rid ), 'bbb-room-meeting-id', true ) . ',';
 		}
-		$meeting_ids = rtrim( $meeting_ids, ',' );
 
-		if ( '' === $meeting_ids ) {
-			return $recordings;
-		}
+		substr_replace( $meeting_ids, '', -1 );
 
 		$arr_params = array(
 			'meetingID' => $meeting_ids,
@@ -257,10 +247,7 @@ class VCBBB_Api {
 
 		$response = self::response_to_xml( $full_response );
 		if ( property_exists( $response, 'recordings' ) && property_exists( $response->recordings, 'recording' ) ) {
-			$recordings = array();
-			foreach ( $response->recordings->recording as $rec ) {
-				$recordings[] = $rec;
-			}
+			$recordings = $response->recordings->recording;
 		}
 
 		return $recordings;

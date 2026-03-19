@@ -117,14 +117,6 @@ class VCBBB_Admin {
 			'dashicons-video-alt2',
 			6
 		);
-		add_submenu_page(
-			'vcbbb_room',
-			__( 'All Rooms', 'video-conferencing-with-bbb' ),
-			__( 'All Rooms', 'video-conferencing-with-bbb' ),
-			'edit_bbb_rooms',
-			'vcbbb_room',
-			array( $this, 'vcbbb_room_menu_page' )
-		);
 		if ( ! VCBBB_Admin_Helper::check_posts() ) {
 			add_submenu_page(
 				'vcbbb_room',

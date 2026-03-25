@@ -95,7 +95,8 @@ class VCBBB_Tokens_Helper {
 
 		if ( count( $rooms ) > 0 ) {
 			if ( ! $access_as_moderator ) {
-				$access_as_moderator = ( get_current_user_id() == get_post( $rooms[0]->room_id )->post_author );
+				$first_room_post = get_post( $rooms[0]->room_id );
+				$access_as_moderator = ( $first_room_post && get_current_user_id() == $first_room_post->post_author );
 			}
 			$selected_room = $rooms[0]->room_id;
 			if ( isset( $selected_room_id ) ) {
@@ -150,6 +151,42 @@ class VCBBB_Tokens_Helper {
 			$content .= $display_helper->get_collapsable_recordings_view_as_string( $room_ids[0], $recordings, $manage_recordings, $view_extended_recording_formats );
 		}
 		return $content;
+	}
+
+	/**
+	 * Append recordings list for room shortcode/widget when the room is recordable.
+	 *
+	 * Single bbb-room posts append a recording shortcode in the_content; pages that only use the
+	 * room shortcode were missing the recordings UI even though BBB saved the recording.
+	 *
+	 * @param VCBBB_Display_Helper $display_helper Display helper.
+	 * @param string               $token_string   Comma-separated token list from shortcode atts.
+	 * @param int                  $author         Content author id used for token checks.
+	 * @return string
+	 */
+	public static function maybe_recordings_table_for_room_tokens( $display_helper, $token_string, $author ) {
+		if ( '' === trim( (string) $token_string ) ) {
+			return '';
+		}
+		$tokens_arr = preg_split( '/\,/', $token_string );
+		foreach ( $tokens_arr as $raw_token ) {
+			if ( '' === sanitize_text_field( $raw_token ) ) {
+				continue;
+			}
+			$token   = preg_replace( '/[^a-zA-Z0-9]+/', '', $raw_token );
+			$room_id = self::find_room_id_by_token( $token, $author );
+			if ( ! $room_id ) {
+				continue;
+			}
+			$recordable = get_post_meta( $room_id, 'bbb-room-recordable', true );
+			if ( '' === $recordable ) {
+				$recordable = get_post_meta( $room_id, 'vcbbb-room-recordable', true );
+			}
+			if ( 'true' === $recordable ) {
+				return self::recordings_table_from_tokens_string( $display_helper, $token_string, $author );
+			}
+		}
+		return '';
 	}
 
 	/**

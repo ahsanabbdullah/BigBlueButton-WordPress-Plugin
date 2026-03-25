@@ -161,9 +161,9 @@ class VCBBB_Public {
 		}
 
 		$room_id = get_the_ID();
+		$room_post = get_post( $room_id );
 
-		if ( null === $room_id || false === $room_id || ! isset( get_post( $room_id )->post_type ) ||
-			'bbb-room' != get_post( $room_id )->post_type ) {
+		if ( null === $room_id || false === $room_id || ! $room_post || 'bbb-room' != $room_post->post_type ) {
 			return $content;
 		}
 
@@ -178,6 +178,30 @@ class VCBBB_Public {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Ensure core/post-terms markup includes a div before Blockify theme filters run.
+	 *
+	 * Blockify (render_block_core/post-terms, priority 10) expects a div wrapper when the
+	 * block has an align attribute. Core can return empty HTML or non-div markup; older
+	 * Blockify then calls getAttribute() on null. Runs at priority 9 so the theme still runs.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $html  Rendered block HTML.
+	 * @param array  $block Parsed block data.
+	 * @return string
+	 */
+	public function vcbbb_blockify_post_terms_compat( $html, $block ) {
+		$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+		if ( empty( $attrs['align'] ) ) {
+			return $html;
+		}
+		if ( is_string( $html ) && preg_match( '/<div\b/i', $html ) ) {
+			return $html;
+		}
+		return '<div class="wp-block-post-terms">' . $html . '</div>';
 	}
 
 	/**

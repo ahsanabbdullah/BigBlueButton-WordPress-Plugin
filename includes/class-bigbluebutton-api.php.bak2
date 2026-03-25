@@ -472,84 +472,6 @@ class VCBBB_Api {
 	}
 
 	/**
-	 * Resolve configured BigBlueButton API base URL and shared secret (same source as API requests).
-	 *
-	 * @since 3.0.0
-	 *
-	 * @return array{0:string,1:string} API base URL (path ends before api/), salt.
-	 */
-	private static function get_bbb_endpoint_url_and_salt() {
-		if ( VCBBB_Loader::is_bbb_pro_active() ) {
-
-			$settings = array(
-				'vcbbb_url'  => get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', VIDEO_CONF_WITH_BBB_ENDPOINT ) ),
-				'vcbbb_salt' => get_option( 'vcbbb_salt', get_option( 'bigbluebutton_salt', VIDEO_CONF_WITH_BBB_SALT ) ),
-			);
-
-			$settings = apply_filters( 'vcbbb_room_server_settings_display', $settings );
-			$settings = apply_filters( 'bbb_room_server_settings_display', $settings );
-
-			// Support both free (vcbbb_*) and Pro (bbb_*) key formats.
-			$url_val  = sanitize_text_field( isset( $settings['vcbbb_url'] ) ? $settings['vcbbb_url'] : ( isset( $settings['bbb_url'] ) ? $settings['bbb_url'] : '' ) );
-			$salt_val = sanitize_text_field( isset( $settings['vcbbb_salt'] ) ? $settings['vcbbb_salt'] : ( isset( $settings['bbb_salt'] ) ? $settings['bbb_salt'] : '' ) );
-
-			if ( empty( $url_val ) || empty( $salt_val ) ) {
-				$url_val  = sanitize_text_field( get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', VIDEO_CONF_WITH_BBB_ENDPOINT ) ) );
-				$salt_val = sanitize_text_field( get_option( 'vcbbb_salt', get_option( 'bigbluebutton_salt', VIDEO_CONF_WITH_BBB_SALT ) ) );
-			}
-		} else {
-			$url_val  = sanitize_text_field( get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', VIDEO_CONF_WITH_BBB_ENDPOINT ) ) );
-			$salt_val = sanitize_text_field( get_option( 'vcbbb_salt', get_option( 'bigbluebutton_salt', VIDEO_CONF_WITH_BBB_SALT ) ) );
-		}
-		return array( $url_val, $salt_val );
-	}
-
-	/**
-	 * Fix playback URLs when BBB returns host "unknown" (misconfigured server URL). Uses the host from
-	 * the plugin BigBlueButton API URL so Share / View recording links work behind proxies or staging.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param string $playback_url URL from getRecordings playback format.
-	 * @return string
-	 */
-	public static function normalize_recording_playback_url( $playback_url ) {
-		$playback_url = trim( (string) $playback_url );
-		if ( '' === $playback_url ) {
-			return $playback_url;
-		}
-		$parts = wp_parse_url( $playback_url );
-		if ( false === $parts || empty( $parts['host'] ) ) {
-			return $playback_url;
-		}
-		if ( 'unknown' !== strtolower( $parts['host'] ) ) {
-			return $playback_url;
-		}
-		list( $endpoint_base ) = self::get_bbb_endpoint_url_and_salt();
-		$ep = wp_parse_url( $endpoint_base );
-		if ( false === $ep || empty( $ep['host'] ) ) {
-			return $playback_url;
-		}
-		$scheme = isset( $ep['scheme'] ) ? strtolower( (string) $ep['scheme'] ) : 'https';
-		if ( 'http' !== $scheme && 'https' !== $scheme ) {
-			$scheme = 'https';
-		}
-		$origin = $scheme . '://' . $ep['host'];
-		if ( ! empty( $ep['port'] ) ) {
-			$origin .= ':' . (int) $ep['port'];
-		}
-		$path    = isset( $parts['path'] ) ? $parts['path'] : '';
-		$rebuilt = $origin . ( '' === $path ? '/' : $path );
-		if ( ! empty( $parts['query'] ) ) {
-			$rebuilt .= '?' . $parts['query'];
-		}
-		if ( ! empty( $parts['fragment'] ) ) {
-			$rebuilt .= '#' . $parts['fragment'];
-		}
-		return $rebuilt;
-	}
-
-	/**
 	 * Returns the complete url for the bigbluebutton server request.
 	 *
 	 * @since   3.0.0
@@ -561,7 +483,20 @@ class VCBBB_Api {
 	private static function build_url( $request_type, $args ) {
 		$type = sanitize_text_field( $request_type );
 
-		list( $url_val, $salt_val ) = self::get_bbb_endpoint_url_and_salt();
+		if ( VCBBB_Loader::is_bbb_pro_active() ) {
+
+			$settings = array(
+				'bbb_url'  => '',
+				'bbb_salt' => '',
+			);
+
+			$settings = apply_filters( 'vcbbb_room_server_settings_display', $settings );
+			$url_val  = sanitize_text_field( $settings['vcbbb_url'] );
+			$salt_val = sanitize_text_field( $settings['vcbbb_salt'] );
+		} else {
+			$url_val  = sanitize_text_field( get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', VIDEO_CONF_WITH_BBB_ENDPOINT ) ) );
+			$salt_val = sanitize_text_field( get_option( 'vcbbb_salt', get_option( 'bigbluebutton_salt', VIDEO_CONF_WITH_BBB_SALT ) ) );
+		}
 
 		$url = $url_val . 'api/' . $type . '?';
 

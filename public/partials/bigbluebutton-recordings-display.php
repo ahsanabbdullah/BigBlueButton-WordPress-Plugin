@@ -67,6 +67,7 @@
 						foreach ( $formats as $format ) {
 							if ( ( isset( $format->type ) && ( (string) $format->type == $default_bbb_recording_format || $view_extended_recording_formats ) ) && isset( $format->url ) ) {
 								$recording_url = trim( apply_filters( 'vcbbb_recording_url_display', (string) $format->url, isset( $format->type ) ? (string) $format->type : '' ) );
+								$recording_url = VCBBB_Api::normalize_recording_playback_url( $recording_url );
 								break;
 							}
 						}

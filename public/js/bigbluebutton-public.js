@@ -1,4 +1,27 @@
 const { __, _x, _n, _nx } = wp.i18n
+
+function bbbCopyTextToClipboard(text) {
+    text = text == null ? '' : String(text);
+    if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+        try {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            ta.style.top = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            var ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            if (ok) { resolve(); } else { reject(new Error('copy failed')); }
+        } catch (e) { reject(e); }
+    });
+}
+
 ;(function ($) {
     /**
      * All of the code for your public-facing JavaScript source
@@ -310,12 +333,17 @@ const { __, _x, _n, _nx } = wp.i18n
         })
 
         // edit recording data in the table
-        $(document).on('click', '.bbb_edit_recording_data', function () {
+        $(document).on('click', '.vcbbb_edit_recording_data, .bbb_edit_recording_data', function () {
             /** global: vcbbb_php_vars */
-            let recordID = $(this).data('record-id')
-            let old_value = $(this).data('record-value')
-            let type = $(this).data('record-type')
-            let nonce = $(this).data('meta-nonce')
+            let $btn = $(this)
+            // Use attr() so hyphenated data-* values are read reliably (jQuery .data() uses camelCase keys).
+            let recordID = $btn.attr('data-record-id')
+            let old_value = $btn.attr('data-record-value')
+            if (typeof old_value === 'undefined') {
+                old_value = ''
+            }
+            let type = $btn.attr('data-record-type')
+            let nonce = $btn.attr('data-meta-nonce')
             let form = '#bbb-recording-' + type + '-' + recordID
             let original_content = $(form).contents()
 
@@ -330,9 +358,12 @@ const { __, _x, _n, _nx } = wp.i18n
                 .appendTo(form)
                 .focus()
 
-            // submit changed recording data
-            $('#submit-recording-' + type + '-' + recordID).keyup(function (e) {
-                if ('Enter' === e.key) {
+            // submit changed recording data (keydown: Enter/Escape reliably across browsers)
+            $('#submit-recording-' + type + '-' + recordID).on('keydown', function (e) {
+                let enter = e.key === 'Enter' || e.which === 13 || e.keyCode === 13
+                let esc = e.key === 'Escape' || e.which === 27 || e.keyCode === 27
+                if (enter) {
+                    e.preventDefault()
                     let new_value = $(this).val()
 
                     let data = {
@@ -351,8 +382,9 @@ const { __, _x, _n, _nx } = wp.i18n
                             if (response.success) {
                                 $(form).text(new_value)
                                 $('<i>', {
-                                    class: 'dashicons dashicons-edit bbb-icon bbb_edit_recording_data',
-                                    id: 'edit-recording-' + type + recordID,
+                                    class:
+                                        'dashicons dashicons-edit bbb-icon vcbbb-icon vcbbb_edit_recording_data bbb_edit_recording_data',
+                                    id: 'edit-recording-' + type + '-' + recordID,
                                     title: vcbbb_php_vars.edit,
                                     'data-record-id': recordID,
                                     'data-record-type': type,
@@ -363,9 +395,9 @@ const { __, _x, _n, _nx } = wp.i18n
                         },
                         'json'
                     )
-                } else if ('Escape' === e.key) {
-                    // restore previous data
-                    $(form).html(original_content)
+                } else if (esc) {
+                    e.preventDefault()
+                    $(form).empty().append(original_content)
                 }
             })
         })
@@ -373,16 +405,15 @@ const { __, _x, _n, _nx } = wp.i18n
 })(jQuery)
 
 function copyToClipboard(elem) {
-    /* Copy the text inside the text field */
-    navigator.clipboard.writeText(elem.getAttribute('data-value'))
-
-    var tooltip = jQuery(elem)
-        .find('.recording-url-tooltip')
-        .html(__('Copied:', 'video-conferencing-with-bbb'))
+    var val = elem.getAttribute('data-value');
+    if (val === null) { return; }
+    bbbCopyTextToClipboard(val).then(function () {
+        jQuery(elem).find('.recording-url-tooltip').html(__('Copied:', 'video-conferencing-with-bbb'));
+    });
 }
 
 function copyClipboardExit(elem) {
-    var tooltip = jQuery(elem)
+    jQuery(elem)
         .find('.recording-url-tooltip')
         .html(__('Share Recording URL', 'video-conferencing-with-bbb'))
 }

@@ -314,6 +314,9 @@ class VideoConferencingWithBBB {
 		// Display join room form.
 		$this->loader->add_filter( 'the_content', $plugin_public, 'vcbbb_room_content' );
 
+		// Blockify theme: ensure post-terms block HTML has a div before theme filter (priority 10).
+		$this->loader->add_filter( 'render_block_core/post-terms', $plugin_public, 'vcbbb_blockify_post_terms_compat', 9, 2 );
+
 		// Wait for moderator Heartbeat API calls.
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_heartbeat' );
 		$this->loader->add_filter( 'query_vars', $plugin_public, 'add_query_vars' );

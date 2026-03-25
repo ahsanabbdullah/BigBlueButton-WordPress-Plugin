@@ -81,7 +81,7 @@ class VCBBB_Public_Room_Api {
 				$viewer_code    = strval( get_post_meta( $room_id, 'bbb-room-viewer-code', true ) );
 			}
 
-			if ( $access_as_moderator || get_post( $room_id )->post_author == $user->ID ) {
+			if ( $access_as_moderator || ( ( $room_post = get_post( $room_id ) ) && $room_post->post_author == $user->ID ) ) {
 				$entry_code = $moderator_code;
 			} elseif ( $access_as_viewer ) {
 				$entry_code = $viewer_code;
@@ -123,7 +123,7 @@ public function get_join_form() {
 		$access_using_code   = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_with_access_code_bbb_room' );
 		$access_as_moderator = ( 
 			VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_moderator_bbb_room' ) 
-			|| ( get_current_user_id() === get_post( $room_id )->post_author ) 
+			|| ( ( $room_post = get_post( $room_id ) ) && get_current_user_id() === $room_post->post_author ) 
 		);
 		$access_as_viewer    = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_viewer_bbb_room' );
 

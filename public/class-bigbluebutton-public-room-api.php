@@ -57,8 +57,8 @@ class VCBBB_Public_Room_Api {
 	 * @since   3.0.0
 	 */
 	public function vcbbb_user_join_room() {
-		if ( isset( $_GET['room_id'] ) && ! empty( $_GET['action'] ) && 'join_room' == $_GET['action'] && wp_verify_nonce( sanitize_text_field( $_GET['vcbbb_join_room_meta_nonce'] ), 'vcbbb_join_room_meta_nonce' ) ) {
-			$room_id                  = sanitize_text_field( $_GET['room_id'] );
+		if ( isset( $_GET['room_id'] ) && ! empty( $_GET['action'] ) && 'join_room' == $_GET['action'] && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['vcbbb_join_room_meta_nonce'] ) ), 'vcbbb_join_room_meta_nonce' ) ) {
+			$room_id                  = sanitize_text_field( wp_unslash( $_GET['room_id'] ) );
 			$user                     = wp_get_current_user();
 			$entry_code               = '';
 			$username                 = EE_VCBBB_Helper::get_meeting_username( $user );
@@ -67,8 +67,8 @@ class VCBBB_Public_Room_Api {
 			$access_using_code        = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_with_access_code_bbb_room' );
 			$access_as_moderator      = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_moderator_bbb_room' );
 			$access_as_viewer         = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_viewer_bbb_room' );
-			$return_url               = esc_url_raw( $_GET['current_page'] );
-			$room_limit_post          = intval( isset( $_GET['post_id'] ) ? get_post_meta( sanitize_text_field( $_GET['post_id'] ), 'bbb_pro_room_limit', true ) : 0 );
+			$return_url               = esc_url_raw( wp_unslash( $_GET['current_page'] ) );
+			$room_limit_post          = intval( isset( $_GET['post_id'] ) ? get_post_meta( sanitize_text_field( wp_unslash( $_GET['post_id'] ) ), 'bbb_pro_room_limit', true ) : 0 );
 			$room_limit_cpt           = intval( get_post_meta( $room_id, 'bbb-room-limit', true ) );
 			$room_limit_global        = intval( get_option( 'bbb_pro_max_participants' ) );
 
@@ -86,7 +86,7 @@ class VCBBB_Public_Room_Api {
 			} elseif ( $access_as_viewer ) {
 				$entry_code = $viewer_code;
 			} elseif ( $access_using_code && isset( $_GET['bbb_meeting_access_code'] ) ) {
-				$entry_code = sanitize_text_field( $_GET['bbb_meeting_access_code'] );
+				$entry_code = sanitize_text_field( wp_unslash( $_GET['bbb_meeting_access_code'] ) );
 				if ( $entry_code != $moderator_code && $entry_code != $viewer_code ) {
 					$query = array(
 						'password_error' => true,
@@ -118,7 +118,7 @@ public function get_join_form() {
 	if ( array_key_exists( 'room_id', $_POST ) ) {
 
 		// Sanitize room ID as a positive integer
-		$room_id = isset( $_POST['room_id'] ) ? absint( $_POST['room_id'] ) : 0;
+		$room_id = isset( $_POST['room_id'] ) ? absint( wp_unslash( $_POST['room_id'] ) ) : 0;
 
 		$access_using_code   = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_with_access_code_bbb_room' );
 		$access_as_moderator = ( 

@@ -354,8 +354,8 @@ class VCBBB_Tokens_Helper {
 
 	if ( isset( $_GET['order'], $_GET['orderby'], $_GET['nonce'] ) 
  && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'vcbbb_sort_recording_columns_nonce' ) ) {
-		$order   = sanitize_text_field( $_GET['order'] );
-		$orderby = sanitize_text_field( $_GET['orderby'] );
+		$order   = sanitize_text_field( wp_unslash( $_GET['order'] ) );
+		$orderby = sanitize_text_field( wp_unslash( $_GET['orderby'] ) );
 		return $recording_helper->get_filtered_and_ordered_recordings_based_on_capability( $room_ids, $order, $orderby );
 	} else {
 		return $recording_helper->get_filtered_and_ordered_recordings_based_on_capability( $room_ids );

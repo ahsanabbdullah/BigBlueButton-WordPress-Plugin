@@ -195,8 +195,8 @@ class VCBBB_Recording_Helper {
 	public function order_recordings( $order = '', $order_by = '' ) {
 		if ( '' !== $order && '' !== $order_by ) {
 
-			$direction = sanitize_text_field( $_GET['order'] );
-			$field     = sanitize_text_field( $_GET['orderby'] );
+			$direction = sanitize_text_field( wp_unslash( $_GET['order'] ) );
+			$field     = sanitize_text_field( wp_unslash( $_GET['orderby'] ) );
 			$self      = $this;
 
 			usort(

@@ -34,11 +34,11 @@ class VCBBB_Admin_Api {
 		}
 
 		if ( $this->can_save_room() ) {
-			$moderator_code = sanitize_text_field( $_POST['bbb-moderator-code'] );
-			$viewer_code    = sanitize_text_field( $_POST['bbb-viewer-code'] );
-			$recordable     = ( array_key_exists( 'bbb-room-recordable', $_POST ) && sanitize_text_field( $_POST['bbb-room-recordable'] ) == 'checked' );
+			$moderator_code = sanitize_text_field( wp_unslash( $_POST['bbb-moderator-code'] ) );
+			$viewer_code    = sanitize_text_field( wp_unslash( $_POST['bbb-viewer-code'] ) );
+			$recordable     = ( array_key_exists( 'bbb-room-recordable', $_POST ) && sanitize_text_field( wp_unslash( $_POST['bbb-room-recordable'] ) ) == 'checked' );
 
-			$wait_for_mod = ( isset( $_POST['bbb-room-wait-for-moderator'] ) && sanitize_text_field( $_POST['bbb-room-wait-for-moderator'] ) == 'checked' );
+			$wait_for_mod = ( isset( $_POST['bbb-room-wait-for-moderator'] ) && sanitize_text_field( wp_unslash( $_POST['bbb-room-wait-for-moderator'] ) ) == 'checked' );
 
 			// Ensure neither code is empty.
 			if ( '' == $moderator_code ) {
@@ -78,9 +78,12 @@ class VCBBB_Admin_Api {
 	 */
 	public function dismiss_admin_notices() {
 		if ( isset( $_POST['type'] ) && 'vcbbb-' === substr( $_POST['type'], 0, 6 ) ) {
-			$type = sanitize_text_field( $_POST['type'] );
-			if ( wp_verify_nonce( $_POST['nonce'], $type ) ) {
-				update_option( 'dismissed-' . $type, true, false );
+			$type = sanitize_text_field( wp_unslash( $_POST['type'] ) );
+			if ( isset( $_POST['nonce'] ) ) {
+				$nonce = sanitize_text_field( wp_unslash( $_POST['nonce'] ) );
+				if ( wp_verify_nonce( $nonce, $type ) ) {
+					update_option( 'dismissed-' . $type, true, false );
+				}
 			}
 		}
 	}
@@ -94,7 +97,7 @@ class VCBBB_Admin_Api {
 		return ( isset( $_POST['bbb-moderator-code'] ) &&
 			isset( $_POST['bbb-viewer-code'] ) &&
 			isset( $_POST['bbb-room-moderator-code-nonce'] ) &&
-			wp_verify_nonce( $_POST['bbb-room-moderator-code-nonce'], 'bbb-room-moderator-code-nonce' ) &&
+			wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bbb-room-moderator-code-nonce'] ) ), 'bbb-room-moderator-code-nonce' ) &&
 			current_user_can( 'create_recordable_bbb_room' ) );
 	}
 }

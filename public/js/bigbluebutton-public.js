@@ -364,6 +364,13 @@ function bbbCopyTextToClipboard(text) {
                 let esc = e.key === 'Escape' || e.which === 27 || e.keyCode === 27
                 if (enter) {
                     e.preventDefault()
+
+                    // Prevent duplicate submits if Enter is fired repeatedly.
+                    if ($(this).data('vcbbbSubmitting')) {
+                        return
+                    }
+                    $(this).data('vcbbbSubmitting', true)
+
                     let new_value = $(this).val()
 
                     let data = {
@@ -391,6 +398,8 @@ function bbbCopyTextToClipboard(text) {
                                     'data-record-value': new_value,
                                     'data-meta-nonce': nonce,
                                 }).appendTo(form)
+                            } else {
+                                $(form).empty().append(original_content)
                             }
                         },
                         'json'

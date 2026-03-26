@@ -36,7 +36,7 @@ class EE_VCBBB_Helper {
 		if ( $user && $user->display_name ) {
 			$username = sanitize_text_field( $user->display_name );
 		} elseif ( isset( $_GET['bbb_meeting_username'] ) ) {
-			$username = sanitize_text_field( $_GET['bbb_meeting_username'] );
+			$username = sanitize_text_field( wp_unslash( $_GET['bbb_meeting_username'] ) );
 		}
 
 		return $username;

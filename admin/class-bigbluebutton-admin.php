@@ -458,10 +458,10 @@ class VCBBB_Admin {
 	 *                          3 - bad bigbluebutton settings configuration
 	 */
 	private function room_server_settings_change() {
-		if ( ! empty( $_POST['action'] ) && 'vcbbb_general_settings' == $_POST['action'] && wp_verify_nonce( sanitize_text_field( $_POST['vcbbb_edit_server_settings_meta_nonce'] ), 'vcbbb_edit_server_settings_meta_nonce' ) ) {
+		if ( ! empty( $_POST['action'] ) && 'vcbbb_general_settings' == wp_unslash( $_POST['action'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['vcbbb_edit_server_settings_meta_nonce'] ) ), 'vcbbb_edit_server_settings_meta_nonce' ) ) {
 			if ( isset( $_POST['vcbbb_url'] ) ) {
-				$bbb_url  = sanitize_text_field( $_POST['vcbbb_url'] );
-				$bbb_salt = sanitize_text_field( $_POST['vcbbb_salt'] );
+				$bbb_url  = sanitize_text_field( wp_unslash( $_POST['vcbbb_url'] ) );
+				$bbb_salt = sanitize_text_field( wp_unslash( $_POST['vcbbb_salt'] ) );
 
 				$bbb_url .= ( substr( $bbb_url, -1 ) == '/' ? '' : '/' );
 

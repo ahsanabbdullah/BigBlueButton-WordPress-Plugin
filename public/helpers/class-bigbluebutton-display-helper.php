@@ -173,10 +173,15 @@ class VCBBB_Display_Helper {
 			'date'        => null,
 		);
 
-		if ( isset( $_GET['order'] ) && isset( $_GET['orderby'] ) && isset( $_GET['nonce'] ) && wp_verify_nonce( $_GET['nonce'], 'vcbbb_sort_recording_columns_nonce' ) ) {
-			$new_direction    = ( sanitize_text_field( $_GET['order'] ) == 'asc' ? 'desc' : 'asc' );
+		if ( isset( $_GET['order'] ) && isset( $_GET['orderby'] ) && isset( $_GET['nonce'] ) ) {
+			$nonce = sanitize_text_field( wp_unslash( $_GET['nonce'] ) );
+			if ( ! wp_verify_nonce( $nonce, 'vcbbb_sort_recording_columns_nonce' ) ) {
+				return $custom_sort_fields;
+			}
+
+			$new_direction    = ( sanitize_text_field( wp_unslash( $_GET['order'] ) ) == 'asc' ? 'desc' : 'asc' );
 			$new_sort_classes = ( 'asc' == $new_direction ? $sort_desc_classes : $sort_asc_classes ) . ' bbb-current-sort-icon';
-			$selected_field   = sanitize_text_field( $_GET['orderby'] );
+			$selected_field   = sanitize_text_field( wp_unslash( $_GET['orderby'] ) );
 
 			if ( array_key_exists( $selected_field, $custom_sort_fields ) ) {
 				$custom_sort_fields[ $selected_field ] = (object) array(

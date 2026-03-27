@@ -6,7 +6,7 @@ Tags: virtual classroom, video conference, BigBlueButton, BBB, online meeting, w
 Requires at least: 5.1  
 Tested up to: 6.9.1  
 Requires PHP: 7.2  
-Stable tag: 2.5.3  
+Stable tag: 2.5.4  
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -177,6 +177,15 @@ To allow a user role to manage recordings add the capability, **manage_bbb_room_
 8. BBB Rooms can also be organized using Categories.
 
 ## Changelog ##
+### 2.5.4 ###
+* Fixed: Blockify theme compatibility issue that caused a fatal error on room view for some staging environments
+
+* Fixed: Recording metadata edit flow reliability (single submit, stable Enter/Escape handling, and correct edit icon state after save)
+* Fixed: Share Recording URL fallback for BBB playback links returning host as "unknown" by normalizing to configured BBB endpoint host
+* Fixed: Duplicate recording block on single room pages by preventing double rendering paths
+* Updated: WP.org compliance hardening for nonce handling and superglobal sanitization with wp_unslash()
+* Updated: Escaping and controlled HTML output in recording and admin template sections for Plugin Check compliance
+
 ### 2.5.3 ###
 * Fixed: Translation strings now use actual default messages instead of placeholder keys so the correct text displays when translation files are missing or not loaded (Room Settings: server notice, success/error messages)
 * Updated: Regenerated .pot/.po translation files; compatibility tested with WordPress 6.9.1

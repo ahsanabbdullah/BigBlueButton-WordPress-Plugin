@@ -5,7 +5,6 @@
 		<p id="bbb-no-recordings-msg" style="display:none;"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
 		<div id="bbb-recordings-table" class="bbb-table-container vcbbb-table-container" role="table">
 			<div class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo $columns; ?> bbb-header vcbbb-header" role="rowgroup">
-				<!-- <div class="flex-row flex-row-<?php echo $columns; ?> first" role="columnheader"><?php esc_html_e( 'Meeting', 'video-conferencing-with-bbb' ); ?></div> -->
 				<a href="<?php echo esc_url( $sort_fields['name']->url ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?> <?php echo esc_html( $sort_fields['name']->header_classes ); ?>" role="columnheader">
 					<?php esc_html_e( 'Recording', 'video-conferencing-with-bbb' ); ?>
 					<i class="<?php echo esc_attr( $sort_fields['name']->classes ); ?>"></i>
@@ -29,7 +28,6 @@
 			</div>
 			<?php foreach ( $recordings as $recording ) { ?>
 				<div id="bbb-recording-<?php echo esc_attr( $recording->recordID ); ?>" class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo esc_attr( $columns ); ?> bbb-recording-row" role="rowgroup">
-					<!-- <div class="flex-row flex-row-<?php echo esc_attr( $columns ); ?> first" role="cell"><?php echo esc_html( urldecode( $recording->name ) ); ?></div> -->
 					<div id="bbb-recording-name-<?php echo esc_attr( $recording->recordID ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
 						<?php echo esc_html( urldecode( $recording->metadata->{'recording-name'} ) ); ?>
 						<?php if ( $manage_bbb_recordings ) { ?>

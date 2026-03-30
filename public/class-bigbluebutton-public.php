@@ -167,17 +167,92 @@ class VCBBB_Public {
 			return $content;
 		}
 
-		$token    = 'z' . $room_id;
-		$content .= '[bigbluebutton token="' . esc_attr( $token ) . '"]';
+		$token = 'z' . $room_id;
+
+		// Editors often paste the recommended shortcode into the bbb-room body; this filter also
+		// injects the same tag. Without this guard, do_shortcode runs the room twice (duplicate UI).
+		if ( ! $this->vcbbb_content_has_room_join_shortcode_for( $content, $room_id ) ) {
+			$content .= '[bigbluebutton token="' . esc_attr( $token ) . '"]';
+		}
 
 		// Add recordings list to post content if the room is recordable.
 		$room_can_record = get_post_meta( $room_id, 'bbb-room-recordable', true );
 
-		if ( 'true' == $room_can_record ) {
+		if ( 'true' == $room_can_record && ! $this->vcbbb_content_has_recording_shortcode_for( $content, $room_id ) ) {
 			$content .= '[bigbluebutton type="recording" token="' . esc_attr( $token ) . '"]';
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Whether post content already includes a (non-recording) BBB shortcode for this room.
+	 *
+	 * @param string $content Raw post content.
+	 * @param int    $room_id bbb-room post ID.
+	 * @return bool
+	 */
+	private function vcbbb_content_has_room_join_shortcode_for( $content, $room_id ) {
+		return $this->vcbbb_parse_shortcodes_for_room_token( $content, (int) $room_id, false );
+	}
+
+	/**
+	 * Whether post content already includes a recording-only BBB shortcode for this room.
+	 *
+	 * @param string $content Raw post content.
+	 * @param int    $room_id bbb-room post ID.
+	 * @return bool
+	 */
+	private function vcbbb_content_has_recording_shortcode_for( $content, $room_id ) {
+		return $this->vcbbb_parse_shortcodes_for_room_token( $content, (int) $room_id, true );
+	}
+
+	/**
+	 * Locate bigbluebutton / legacy shortcode tags that reference a room token.
+	 *
+	 * @param string $content        Raw post content.
+	 * @param int    $room_id        bbb-room post ID.
+	 * @param bool   $recording_only True = match type="recording" only; false = match join/room blocks only.
+	 * @return bool
+	 */
+	private function vcbbb_parse_shortcodes_for_room_token( $content, $room_id, $recording_only ) {
+		$tags = array( 'bigbluebutton', 'video-conferencing-with-bbb' );
+		foreach ( $tags as $tag ) {
+			if ( ! has_shortcode( $content, $tag ) ) {
+				continue;
+			}
+			$pattern = '/' . get_shortcode_regex( array( $tag ) ) . '/';
+			if ( ! preg_match_all( $pattern, $content, $matches, PREG_SET_ORDER ) ) {
+				continue;
+			}
+			foreach ( $matches as $match ) {
+				if ( empty( $match[3] ) ) {
+					continue;
+				}
+				$atts = shortcode_parse_atts( $match[3] );
+				if ( ! is_array( $atts ) ) {
+					continue;
+				}
+				$is_recording = isset( $atts['type'] ) && 'recording' === $atts['type'];
+				if ( $recording_only ) {
+					if ( ! $is_recording ) {
+						continue;
+					}
+				} elseif ( $is_recording ) {
+					continue;
+				}
+				if ( empty( $atts['token'] ) ) {
+					continue;
+				}
+				$tok = preg_replace( '/[^a-zA-Z0-9]+/', '', $atts['token'] );
+				$zid = 'z' . $room_id;
+				$nid = (string) $room_id;
+				if ( $tok === $zid || $tok === $nid ) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

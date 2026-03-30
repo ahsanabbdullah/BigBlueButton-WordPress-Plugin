@@ -178,13 +178,12 @@ To allow a user role to manage recordings add the capability, **manage_bbb_room_
 
 ## Changelog ##
 ### 2.5.4 ###
-* Fixed: Blockify theme compatibility issue that caused a fatal error on room view for some staging environments
-
-* Fixed: Recording metadata edit flow reliability (single submit, stable Enter/Escape handling, and correct edit icon state after save)
-* Fixed: Share Recording URL fallback for BBB playback links returning host as "unknown" by normalizing to configured BBB endpoint host
-* Fixed: Duplicate recording block on single room pages by preventing double rendering paths
-* Updated: WP.org compliance hardening for nonce handling and superglobal sanitization with wp_unslash()
-* Updated: Escaping and controlled HTML output in recording and admin template sections for Plugin Check compliance
+* Fixed: Fatal error on some block themes (e.g. Blockify) when viewing a room page, by ensuring core/post-terms block markup is compatible with theme filters
+* Fixed: Recording name/description edit on the front end (reliable data attributes, Enter/Escape handling, duplicate-submit guard, and edit icon markup after save)
+* Fixed: Share Recording URL copying incorrect links (e.g. http://unknown/) when BBB returns a placeholder host; playback URLs now align with the configured BBB API endpoint host
+* Fixed: Recordings section appearing twice on single BBB room pages when both the room shortcode and the auto-appended recording shortcode rendered the list
+* Updated: Nonce verification and request input handling to use wp_unslash() before sanitization where appropriate (admin, public room/join flows, recording sort links)
+* Updated: Late escaping and safer HTML output for room access-code metabox fields and collapsible recordings markup for Plugin Check / WordPress.org guidelines
 
 ### 2.5.3 ###
 * Fixed: Translation strings now use actual default messages instead of placeholder keys so the correct text displays when translation files are missing or not loaded (Room Settings: server notice, success/error messages)

@@ -166,6 +166,7 @@
 								<input size="30" type="text" disabled value="[bigbluebutton token='z2xxx']"/>
 								<span class="bbb-dashicon dashicons dashicons-admin-page"></span>
 							</span>
+						<p class="bbb-single-room-shortcode-note"><strong><?php esc_html_e( 'Note:', 'video-conferencing-with-bbb' ); ?></strong> <?php esc_html_e( 'The two shortcodes above are alternatives (with or without room_limit). Paste only one on a page; pasting both will show the same room twice.', 'video-conferencing-with-bbb' ); ?></p>
 						<div class="desc">
 							<ul>
 								<li><strong>token</strong> : The BBB Room token, see BBB Rooms -> All Rooms -> Token</li>

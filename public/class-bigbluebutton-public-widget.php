@@ -49,7 +49,7 @@ class VCBBB_Public_Widget extends WP_Widget {
 		$author         = isset( $instance['author'] ) ? $instance['author'] : 0;
 		$display_helper = new VCBBB_Display_Helper( plugin_dir_path( __FILE__ ) );
 
-		echo $args['before_widget'] . $args['before_title'] . $args['widget_name'] . $args['after_title'];
+		echo $args['before_widget'] . $args['before_title'] . esc_html( $args['widget_name'] ) . $args['after_title'];
 
 		echo VCBBB_Tokens_Helper::join_form_from_tokens_string( $display_helper, $tokens_string, $author );
 

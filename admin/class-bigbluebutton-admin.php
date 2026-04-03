@@ -115,7 +115,7 @@ class VCBBB_Admin {
 			'vcbbb_room',
 			array( $this, 'vcbbb_room_menu_page' ),
 			'dashicons-video-alt2',
-			6
+			65
 		);
 		if ( ! VCBBB_Admin_Helper::check_posts() ) {
 			add_submenu_page(
@@ -207,7 +207,7 @@ class VCBBB_Admin {
 	 */
 	public function add_custom_room_column_to_list( $columns ) {
 		if ( ! function_exists( 'get_current_screen' ) ) {
-			include ABSPATH . '/wp-admin/includes/screen.php';
+			require_once ABSPATH . '/wp-admin/includes/screen.php';
 		}
 
 		if ( function_exists( 'get_current_screen' ) ) {
@@ -245,7 +245,7 @@ class VCBBB_Admin {
 	 */
 	public function vcbbb_room_custom_columns( $column, $post_id ) {
 		if ( ! function_exists( 'get_current_screen' ) ) {
-			include ABSPATH . '/wp-admin/includes/screen.php';
+			require_once ABSPATH . '/wp-admin/includes/screen.php';
 		}
 
 		if ( function_exists( 'get_current_screen' ) ) {
@@ -302,7 +302,7 @@ class VCBBB_Admin {
 				break;
 			case 'start-time':
 				if ( ! VCBBB_Loader::is_bbb_pro_active() ) {
-					echo '<a href="' . VIDEO_CONF_WITH_BBB_PRO . '" target="_blank" rel="noopener">Pro version feature</a>';
+					echo '<a href="' . esc_url( VIDEO_CONF_WITH_BBB_PRO ) . '" target="_blank" rel="noopener">Pro version feature</a>';
 				} else {
 					$is_start_time = get_post_meta( $post_id, 'bbb-start-time', true );
 					if ( $is_start_time ) {
@@ -508,7 +508,7 @@ class VCBBB_Admin {
 	 */
 	public function notice_review_plugin() {
 		if ( ! function_exists( 'get_current_screen' ) ) {
-			include ABSPATH . '/wp-admin/includes/screen.php';
+			require_once ABSPATH . '/wp-admin/includes/screen.php';
 		}
 
 		if ( function_exists( 'get_current_screen' ) ) {
@@ -620,7 +620,7 @@ class VCBBB_Admin {
 		}
 
 		if ( ! function_exists( 'get_current_screen' ) ) {
-			include ABSPATH . '/wp-admin/includes/screen.php';
+			require_once ABSPATH . '/wp-admin/includes/screen.php';
 		}
 
 		if ( function_exists( 'get_current_screen' ) ) {

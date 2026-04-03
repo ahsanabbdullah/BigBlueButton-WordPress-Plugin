@@ -4,9 +4,9 @@ Contributors: blindsidenetworks, jfederico, yfngdu, elearningevolve, adeelraza_7
 Donate link: https://link.elearningevolve.com/self-pay 
 Tags: virtual classroom, video conference, BigBlueButton, BBB, online meeting, web conferencing, online teaching, learning management system, LMS, online session, live training, video conferencing, video conference, meetings, virtual meetings
 Requires at least: 5.1  
-Tested up to: 6.9.1  
+Tested up to: 6.9.4  
 Requires PHP: 7.2  
-Stable tag: 2.5.4  
+Stable tag: 3.0.0  
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -177,13 +177,14 @@ To allow a user role to manage recordings add the capability, **manage_bbb_room_
 8. BBB Rooms can also be organized using Categories.
 
 ## Changelog ##
-### 2.5.4 ###
-* Fixed: Fatal error on some block themes (e.g. Blockify) when viewing a room page, by ensuring core/post-terms block markup is compatible with theme filters
-* Fixed: Recording name/description edit on the front end (reliable data attributes, Enter/Escape handling, duplicate-submit guard, and edit icon markup after save)
-* Fixed: Share Recording URL copying incorrect links (e.g. http://unknown/) when BBB returns a placeholder host; playback URLs now align with the configured BBB API endpoint host
-* Fixed: Recordings section appearing twice on single BBB room pages when both the room shortcode and the auto-appended recording shortcode rendered the list
-* Updated: Nonce verification and request input handling to use wp_unslash() before sanitization where appropriate (admin, public room/join flows, recording sort links)
-* Updated: Late escaping and safer HTML output for room access-code metabox fields and collapsible recordings markup for Plugin Check / WordPress.org guidelines
+
+### 3.0.0 ###
+* ⚠️Important Notice: Please test on staging site before updating on a live site due to major changes to the plugin codebase.
+* Major Upgrade: Pro plugin is 6.0.0 is a must to work with the Free plugin 3.0.0 major upgrade
+* Major Upgrade: Updated all function names to comply with WordPress.org plugin standards
+* Major Upgrade: Updated all class names to comply with WordPress.org plugin standards
+* Major Upgrade: Updated all variable names to comply with WordPress.org plugin standards
+* Breaking Changes: Significant refactoring of plugin codebase for WordPress.org compliance
 
 ### 2.5.3 ###
 * Fixed: Translation strings now use actual default messages instead of placeholder keys so the correct text displays when translation files are missing or not loaded (Room Settings: server notice, success/error messages)
@@ -395,3 +396,8 @@ This plugin is a fork of the BigBlueButton plugin initially released by Blindsid
 * Improvement: Tested with WP version 5.8.2.
 * Improvement: Ability to copy the shortcode from the BBB Rooms listing page.
 * Improvement: Use HTTPS version for the test bigbluebutton endpoint
+
+## Upgrade Notice ##
+
+### 3.0.0 ###
+Maintenance release: fixes for block themes on room pages, recording edit/share URLs, duplicate recordings list, and safer request handling. No manual steps required after updating.

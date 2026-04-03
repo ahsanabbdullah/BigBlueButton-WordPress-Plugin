@@ -21,7 +21,7 @@
 
 		<?php elseif ( 'room_create_limit' == $type ) : ?>
 			
-			<a target="_blank" rel="noopener" href="<?php echo VIDEO_CONF_WITH_BBB_PRO; ?>">
+			<a target="_blank" rel="noopener" href="<?php echo esc_url( VIDEO_CONF_WITH_BBB_PRO ); ?>">
 				<button class="bbb-settings-btn" 
 				        data-notice="<?php echo esc_attr( $bbb_warning_type ); ?>" 
 				        data-nonce="<?php echo esc_attr( $bbb_admin_notice_nonce ); ?>">

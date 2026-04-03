@@ -13,7 +13,7 @@
 			</nav>		
 			<form id="bbb-general-settings-form" method="POST" action="" enctype="multipart/form-data">
 				<input type="hidden" name="action" value="vcbbb_general_settings">
-				<input type="hidden" id="vcbbb_edit_server_settings_meta_nonce" name="vcbbb_edit_server_settings_meta_nonce" value="<?php echo $meta_nonce; ?>">
+				<input type="hidden" id="vcbbb_edit_server_settings_meta_nonce" name="vcbbb_edit_server_settings_meta_nonce" value="<?php echo esc_attr( $meta_nonce); ?>">
 				 <div class="tab-content">
 					<?php if ( null === $tab ) : ?>
 						<?php  do_action( 'vcbbb_setup_tab_content' ); ?>
@@ -36,27 +36,27 @@
 						<br />
 						<label id="endpoint-url-note">
 							<?php
-							echo apply_filters(
-    'vcbbb_room_default_server_notice',
-    wp_kses(
-        __( '<h4><strong class="bbb-hosting-notice">Endpoint URL & Secret:</strong> The default credentials are using a DEVELOPMENT level BigBlueButton server provided by <a rel="noopener" href="https://blindsidenetworks.com/" target="_blank">Blindside Networks</a> you MUST replace them with the credentials from a PRODUCTION-level server on your live site.' . "\n" . '<p><strong class="bbb-hosting-notice">Important:</strong>' . "\n" . 'Review the <a rel="noopener" href="https://elearningevolve.com/blog/hosting-virtual-classroom-for-wordpress" target="_blank">hosting guide</a> before joining the virtual classroom</p>' . "\n" . '</h4>', 'video-conferencing-with-bbb' ),
-        array(
-            'a'      => array(
-                'href'   => array(),
-                'title'  => array(),
-                'target' => array(),
-                'rel'    => array(),
-            ),
-            'strong' => array(
-                'class' => array(),
-            ),
-            'h4'     => array(
-                'class' => array(),
-            ),
-            'p'      => array(
-                'class' => array(),
-            ),
-        )
+						echo wp_kses(
+    apply_filters(
+        'vcbbb_room_default_server_notice',
+        __( '<h4><strong class="bbb-hosting-notice">Endpoint URL & Secret:</strong> The default credentials are using a DEVELOPMENT level BigBlueButton server provided by <a rel="noopener" href="https://blindsidenetworks.com/" target="_blank">Blindside Networks</a> you MUST replace them with the credentials from a PRODUCTION-level server on your live site.' . "\n" . '<p><strong class="bbb-hosting-notice">Important:</strong>' . "\n" . 'Review the <a rel="noopener" href="https://elearningevolve.com/blog/hosting-virtual-classroom-for-wordpress" target="_blank">hosting guide</a> before joining the virtual classroom</p>' . "\n" . '</h4>', 'video-conferencing-with-bbb' )
+    ),
+    array(
+        'a'      => array(
+            'href'   => array(),
+            'title'  => array(),
+            'target' => array(),
+            'rel'    => array(),
+        ),
+        'strong' => array(
+            'class' => array(),
+        ),
+        'h4'     => array(
+            'class' => array(),
+        ),
+        'p'      => array(
+            'class' => array(),
+        ),
     )
 );
 							?>

@@ -15,7 +15,7 @@
  * Plugin Name:       Virtual Classroom & Video Conferencing - BigBlueButton
  * Plugin URI:        https://wordpress.org/plugins/video-conferencing-with-bbb
  * Description:       This plugin allows teachers to manage their virtual classrooms right from WordPress using BigBlueButton
- * Version:           2.5.4
+ * Version:           3.0.0
  * Author:            eLearning evolve
  * Author URI:        https://elearningevolve.com/
  * License:           GPL-2.0+
@@ -23,7 +23,7 @@
  * Text Domain:       video-conferencing-with-bbb
  * Domain Path:       /languages
  */
-$plugin_version = '2.5.4';
+$plugin_version = '3.0.0';
 $plugin_name    = 'Virtual Classroom & Video Conferencing - BigBlueButton';
 
 // If this file is called directly, abort.
@@ -69,7 +69,7 @@ add_action(
  */
 function video_conf_vcbbb_check_conflict_early() {
 	$conflict_basenames = array(
-		'bigbluebutton/bigbluebutton.php'                    => 'BigBlueButton',
+
 		'bbb-administration-panel/bigbluebutton-plugin.php' => 'BBB Administration Panel',
 	);
 
@@ -86,16 +86,19 @@ function video_conf_vcbbb_check_conflict_early() {
 		if ( is_plugin_active( $basename ) || is_plugin_active_for_network( $basename ) ) {
 			$deactivated_plugin = $plugin_name;
 
-			// Deactivate conflicting plugin immediately.
-			deactivate_plugins( $basename );
+			
 		}
 	}
 
 	if ( $deactivated_plugin ) {
 		// Set notice that we deactivated the conflicting plugin.
-		set_transient( 'video_conf_vcbbb_conflict_notice', '<strong>Virtual Classroom & Video Conferencing</strong> has been activated. <strong>' . $deactivated_plugin . '</strong> plugin was automatically deactivated.', 5 );
+		set_transient(
+	'video_conf_vcbbb_conflict_notice',
+	'<strong>Virtual Classroom & Video Conferencing</strong> is not compatible with <strong>' . esc_html( $deactivated_plugin ) . '</strong>. Please deactivate the conflicting plugin first.',
+	5
+);
 		// Continue loading our plugin.
-		return false;
+		return true;
 	}
 
 	return false;
@@ -110,7 +113,7 @@ function video_conf_vcbbb_check_conflict_early() {
 function video_conf_vcbbb_check_conflict( $is_echo = true ) {
 
 	$conflict_basenames = array(
-		'bigbluebutton/bigbluebutton.php',
+
 		'bbb-administration-panel/bigbluebutton-plugin.php',
 	);
 
@@ -139,7 +142,7 @@ function video_conf_vcbbb_check_conflict( $is_echo = true ) {
 					unset( $_GET['activate'] );
 				}
 
-				deactivate_plugins( $basename );
+				
 
 				if ( $is_echo ) {
 					set_transient( 'video_conf_vcbbb_conflict_notice', $plugin['msg'], 3 );

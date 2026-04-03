@@ -4,7 +4,7 @@
 	<?php } else { ?>
 		<p id="bbb-no-recordings-msg" style="display:none;"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
 		<div id="bbb-recordings-table" class="bbb-table-container vcbbb-table-container" role="table">
-			<div class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo $columns; ?> bbb-header vcbbb-header" role="rowgroup">
+			<div class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo esc_attr( $columns ); ?> bbb-header vcbbb-header" role="rowgroup">
 				<a href="<?php echo esc_url( $sort_fields['name']->url ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?> <?php echo esc_html( $sort_fields['name']->header_classes ); ?>" role="columnheader">
 					<?php esc_html_e( 'Recording', 'video-conferencing-with-bbb' ); ?>
 					<i class="<?php echo esc_attr( $sort_fields['name']->classes ); ?>"></i>
@@ -78,7 +78,7 @@
 						</div>
 					</div>
 					<?php if ( $manage_bbb_recordings ) { ?>
-						<div class="flex-row flex-row-<?php echo $columns; ?>" role="cell">
+						<div class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
 							<?php if ( isset( $recording->protected_icon_classes ) && isset( $recording->protected_icon_title ) ) { ?>
 								<i data-record-id="<?php echo esc_attr( $recording->recordID ); ?>"
 										data-meta-nonce="<?php echo esc_attr( $meta_nonce ); ?>"
@@ -96,8 +96,8 @@
 							<i data-record-id="<?php echo esc_attr( $recording->recordID ); ?>"
 								data-meta-nonce="<?php echo esc_attr( $meta_nonce ); ?>"
 								class="<?php echo esc_attr( $recording->trash_icon_classes ); ?>"
-								title="<?php echo esc_attr_x( 'Trash', 'post status', 'video-conferencing-with-vcbbb' ); ?>"
-                                aria-label="<?php echo esc_attr_x( 'Trash', 'post status', 'video-conferencing-with-vcbbb' ); ?>"></i>
+								title="<?php echo esc_attr_x( 'Trash', 'post status', 'video-conferencing-with-bbb' ); ?>"
+                                aria-label="<?php echo esc_attr_x( 'Trash', 'post status', 'video-conferencing-with-bbb' ); ?>"></i>
 							&nbsp;
 							<span class="tooltip" onclick="copyToClipboard(this)" onmouseout="copyClipboardExit(this)"
 								data-value="<?php echo esc_url( $recording_url ); ?>">

@@ -6,7 +6,7 @@ Tags: virtual classroom, video conference, BigBlueButton, BBB, online meeting, w
 Requires at least: 5.1  
 Tested up to: 6.9.4  
 Requires PHP: 7.2  
-Stable tag: 3.0.0  
+Stable tag: 3.1.1
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -177,6 +177,16 @@ To allow a user role to manage recordings add the capability, **manage_bbb_room_
 8. BBB Rooms can also be organized using Categories.
 
 ## Changelog ##
+
+### 3.1.1 ###
+* Fixed: Pages that use the meeting shortcode (to let people join a room) now show only the join/start meeting area again. A list of recordings will no longer appear under that shortcode by default, so the page stays simple for your visitors.
+* Fixed: The BBB Rooms sidebar widget now shows only the join form as well, without automatically adding recordings under it.
+* Note: Nothing changes about how recordings work on the room’s own page, or when you use the recordings shortcode on purpose. If you want recordings on a normal page, add the recordings shortcode there (or use the “recording” type in the shortcode) in addition to the join shortcode.
+
+### 3.1.0 ###
+* Fixed: Translation support by using the correct plugin text domain, so the right text displays properly even if translations aren’t loaded.
+* Fixed: WordPress conflict handling so the plugin no longer automatically deactivates other plugins (user must control activation).
+* Updated: Admin menu placement (“BBB Rooms”) to match WordPress admin hierarchy better.
 
 ### 3.0.0 ###
 * ⚠️Important Notice: Please test on staging site before updating on a live site due to major changes to the plugin codebase.

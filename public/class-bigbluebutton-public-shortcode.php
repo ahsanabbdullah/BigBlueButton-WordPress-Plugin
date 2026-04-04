@@ -70,12 +70,6 @@ class VCBBB_Public_Shortcode {
 
 		if ( 'room' == $type ) {
 			$content .= VCBBB_Tokens_Helper::join_form_from_tokens_string( $display_helper, $tokens_string, $author );
-
-			// Avoid duplicate recording blocks on single bbb-room pages where vcbbb_room_content
-			// already appends a dedicated [bigbluebutton type="recording"] shortcode.
-			if ( ! is_singular( 'bbb-room' ) ) {
-				$content .= VCBBB_Tokens_Helper::maybe_recordings_table_for_room_tokens( $display_helper, $tokens_string, $author );
-			}
 		} elseif ( 'recording' == $type ) {
 			$content .= VCBBB_Tokens_Helper::recordings_table_from_tokens_string( $display_helper, $tokens_string, $author );
 		}

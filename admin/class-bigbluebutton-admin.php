@@ -454,9 +454,6 @@ class VCBBB_Admin {
 		$change_success = $this->room_server_settings_change();
 		$bbb_settings   = $this->fetch_room_server_settings();
 		$meta_nonce     = wp_create_nonce( 'vcbbb_edit_server_settings_meta_nonce' );
-		$user           = get_userdata( get_current_user_id() );
-		$user_email     = ( isset( $user->user_email ) ? $user->user_email : '' );
-		$display_name   = ( isset( $user->display_name ) ? $user->display_name : '' );
 
 		// Get the active tab from the $_GET param.
 		$default_tab = null;

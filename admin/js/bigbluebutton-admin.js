@@ -74,6 +74,67 @@ function bbbCopyTextToClipboard(text) {
 			);
 		});
 	});
+
+	$( function() {
+		var $page = $( '.vcbbb-shortcode-page' );
+		if ( ! $page.length ) {
+			return;
+		}
+
+		var $modal = $page.find( '#vcbbb-sc-modal' );
+		var $body = $modal.find( '.vcbbb-sc-modal-body' );
+		var lastFocus = null;
+
+		function closeShortcodeModal() {
+			$modal.removeClass( 'is-open' ).attr( 'aria-hidden', 'true' );
+			$( 'body' ).removeClass( 'vcbbb-sc-modal-open' );
+			$body.empty();
+			if ( lastFocus && lastFocus.focus ) {
+				lastFocus.focus();
+			}
+			lastFocus = null;
+		}
+
+		function openShortcodeModal( card ) {
+			lastFocus = document.activeElement;
+			$body.html( $( card ).html() );
+			$modal.addClass( 'is-open' ).attr( 'aria-hidden', 'false' );
+			$( 'body' ).addClass( 'vcbbb-sc-modal-open' );
+			$modal.find( '.vcbbb-sc-modal-close' ).trigger( 'focus' );
+		}
+
+		$page.on( 'click', '.vcbbb-sc-copy', function( e ) {
+			e.stopPropagation();
+		});
+
+		$page.on( 'click', '.vcbbb-sc-card', function( e ) {
+			if ( $( e.target ).closest( '.vcbbb-sc-copy' ).length ) {
+				return;
+			}
+			if ( window.getSelection && String( window.getSelection() ) ) {
+				return;
+			}
+			openShortcodeModal( this );
+		});
+
+		$page.on( 'keydown', '.vcbbb-sc-card', function( e ) {
+			if ( e.key === 'Enter' || e.key === ' ' ) {
+				e.preventDefault();
+				openShortcodeModal( this );
+			}
+		});
+
+		$modal.on( 'click', '.vcbbb-sc-modal-backdrop, .vcbbb-sc-modal-close', function( e ) {
+			e.preventDefault();
+			closeShortcodeModal();
+		});
+
+		$( document ).on( 'keydown.vcbbbScModal', function( e ) {
+			if ( e.key === 'Escape' && $modal.hasClass( 'is-open' ) ) {
+				closeShortcodeModal();
+			}
+		});
+	});
 }( jQuery ) );
 
 function copyToClipboard(elem) {

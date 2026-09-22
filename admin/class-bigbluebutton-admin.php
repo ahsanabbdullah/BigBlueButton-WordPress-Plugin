@@ -120,7 +120,7 @@ class VCBBB_Admin {
 		add_submenu_page(
 			'vcbbb_room',
 			__( 'Add New', 'video-conferencing-with-bbb' ),
-			__( 'Add New', 'video-conferencing-with-bbb' ),
+			$this->get_menu_title_with_icon( 'dashicons-plus', __( 'Add New', 'video-conferencing-with-bbb' ) ),
 			'add_bbb_rooms',
 			'post-new.php?post_type=bbb-room',
 			''
@@ -130,7 +130,7 @@ class VCBBB_Admin {
 			add_submenu_page(
 				'vcbbb_room',
 				__( 'Room Categories', 'video-conferencing-with-bbb' ),
-				__( 'Categories', 'video-conferencing-with-bbb' ),
+				$this->get_menu_title_with_icon( 'dashicons-category', __( 'Categories', 'video-conferencing-with-bbb' ) ),
 				'edit_bbb_rooms',
 				'edit-tags.php?taxonomy=bbb-room-category',
 				''
@@ -140,22 +140,115 @@ class VCBBB_Admin {
 		add_submenu_page(
 			'vcbbb_room',
 			__( 'Rooms Settings', 'video-conferencing-with-bbb' ),
-			__( 'Settings', 'video-conferencing-with-bbb' ),
+			$this->get_menu_title_with_icon( 'dashicons-admin-generic', __( 'Settings', 'video-conferencing-with-bbb' ) ),
 			'manage_options',
 			'bbb-room-server-settings',
 			array( $this, 'display_room_server_settings' )
 		);
 
+		add_submenu_page(
+			'vcbbb_room',
+			__( 'Shortcodes', 'video-conferencing-with-bbb' ),
+			$this->get_menu_title_with_icon( 'dashicons-editor-code', __( 'Shortcode', 'video-conferencing-with-bbb' ) ),
+			'edit_bbb_rooms',
+			'bbb-room-shortcodes',
+			array( $this, 'display_shortcodes_page' )
+		);
+
 		if ( ! VCBBB_Loader::is_bbb_pro_active() ) {
 			add_submenu_page(
 				'vcbbb_room',
+				__( 'Pro Version Features', 'video-conferencing-with-bbb' ),
+				$this->get_menu_title_with_icon( 'dashicons-star-filled', __( 'Pro Version Features', 'video-conferencing-with-bbb' ) ),
+				'edit_bbb_rooms',
+				'bbb-room-pro-features',
+				array( $this, 'display_pro_features_page' )
+			);
+
+			add_submenu_page(
+				'vcbbb_room',
 				__( 'Get Pro Version', 'video-conferencing-with-bbb' ),
-				__( 'Get Pro Version', 'video-conferencing-with-bbb' ),
+				$this->get_menu_title_with_icon( 'dashicons-awards', __( 'Get Pro Version', 'video-conferencing-with-bbb' ) ),
 				'manage_options',
 				'bbb-room-pro-version',
 				array( $this, 'redirect_to_pro_version' )
 			);
 		}
+	}
+
+	/**
+	 * Prefix a submenu label with a Dashicon.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param string $icon  Dashicon class, for example dashicons-plus.
+	 * @param string $label Translated menu label.
+	 * @return string
+	 */
+	private function get_menu_title_with_icon( $icon, $label ) {
+		return sprintf(
+			'<span class="dashicons %1$s" aria-hidden="true"></span> %2$s',
+			esc_attr( $icon ),
+			esc_html( $label )
+		);
+	}
+
+	/**
+	 * Add icons to CPT-generated items and keep submenu order stable.
+	 *
+	 * @since 3.2.3
+	 */
+	public function decorate_admin_submenu() {
+		global $submenu;
+
+		if ( empty( $submenu['vcbbb_room'] ) || ! is_array( $submenu['vcbbb_room'] ) ) {
+			return;
+		}
+
+		$icon_map = array(
+			'edit.php?post_type=bbb-room'                => 'dashicons-format-video',
+			'post-new.php?post_type=bbb-room'            => 'dashicons-plus',
+			'edit-tags.php?taxonomy=bbb-room-category'   => 'dashicons-category',
+			'bbb-room-server-settings'                   => 'dashicons-admin-generic',
+			'bbb-room-shortcodes'                        => 'dashicons-editor-code',
+			'bbb-room-pro-features'                      => 'dashicons-star-filled',
+			'bbb-room-pro-version'                       => 'dashicons-awards',
+		);
+
+		$order = array(
+			'edit.php?post_type=bbb-room',
+			'post-new.php?post_type=bbb-room',
+			'edit-tags.php?taxonomy=bbb-room-category',
+			'bbb-room-server-settings',
+			'bbb-room-shortcodes',
+			'bbb-room-pro-features',
+			'bbb-room-pro-version',
+		);
+
+		$items_by_slug = array();
+		foreach ( $submenu['vcbbb_room'] as $item ) {
+			if ( empty( $item[2] ) || 'vcbbb_room' === $item[2] ) {
+				continue;
+			}
+			$slug = $item[2];
+			if ( isset( $icon_map[ $slug ] ) && false === strpos( (string) $item[0], 'dashicons' ) ) {
+				$item[0] = $this->get_menu_title_with_icon( $icon_map[ $slug ], wp_strip_all_tags( $item[0] ) );
+			}
+			$items_by_slug[ $slug ] = $item;
+		}
+
+		$ordered = array();
+		foreach ( $order as $slug ) {
+			if ( isset( $items_by_slug[ $slug ] ) ) {
+				$ordered[] = $items_by_slug[ $slug ];
+				unset( $items_by_slug[ $slug ] );
+			}
+		}
+		foreach ( $items_by_slug as $item ) {
+			$ordered[] = $item;
+		}
+
+		$submenu['vcbbb_room'] = $ordered;
 	}
 
 
@@ -373,12 +466,36 @@ class VCBBB_Admin {
 	}
 
 	/**
+	 * Render the shortcodes admin page.
+	 *
+	 * @since 3.2.3
+	 */
+	public function display_shortcodes_page() {
+		if ( ! current_user_can( 'edit_bbb_rooms' ) ) {
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'video-conferencing-with-bbb' ) );
+		}
+		require_once 'partials/bigbluebutton-shortcodes-display.php';
+	}
+
+	/**
+	 * Render the Pro version features admin page.
+	 *
+	 * @since 3.2.3
+	 */
+	public function display_pro_features_page() {
+		if ( ! current_user_can( 'edit_bbb_rooms' ) ) {
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'video-conferencing-with-bbb' ) );
+		}
+		require_once 'partials/bigbluebutton-pro-features-display.php';
+	}
+
+	/**
 	 * Render the pro version page for plugin.
 	 *
 	 * @since   3.0.0
 	 */
 	public function display_pro_version_page() {
-		require_once 'partials/bigbluebutton-pro-version.php';
+		$this->display_pro_features_page();
 	}
 
 	/**

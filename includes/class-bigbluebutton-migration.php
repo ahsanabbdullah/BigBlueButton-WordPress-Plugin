@@ -98,9 +98,6 @@ class VCBBB_Migration {
 		$old_room_logs_table_exists = ( $wpdb->get_var( $old_room_logs_query ) === $old_room_logs_table ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration.
 		if ( $wpdb->get_var( $old_rooms_query ) === $old_rooms_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration.
 			$old_rooms = $wpdb->get_results( "SELECT * FROM `{$old_rooms_table_sql}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is prefix + esc_sql.
-			// Import old rooms to new rooms.
-			foreach ( $old_rooms as $old_room ) {
-			// Import old rooms to new rooms.
 			foreach ( $old_rooms as $old_room ) {
 				$new_room_args = array(
 					'post_title' => $old_room->meetingName,

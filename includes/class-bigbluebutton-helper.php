@@ -90,7 +90,14 @@ class EE_VCBBB_Helper {
 			return $timezone;
 		}
 
-		return 'UTC';
+		$offset    = (float) get_option( 'gmt_offset' );
+		$hours     = (int) $offset;
+		$minutes   = ( $offset - $hours );
+		$sign      = ( $offset < 0 ) ? '-' : '+';
+		$abs_hour  = abs( $hours );
+		$abs_mins  = abs( $minutes * 60 );
+
+		return sprintf( '%s%02d:%02d', $sign, $abs_hour, $abs_mins );
 	}
 
 	/**

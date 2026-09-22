@@ -289,9 +289,19 @@
     min-height: 30vh;
 }
 
-#adminmenumain #adminmenu #toplevel_page_bbb_room ul li:nth-child(6) a {
-    font-weight: bolder;
-    color: #68a6cf;
+#adminmenu #toplevel_page_vcbbb_room .wp-submenu .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 1.15;
+	margin-right: 6px;
+	vertical-align: text-bottom;
+	display: inline-block;
+}
+
+#adminmenu #toplevel_page_vcbbb_room a[href*="page=bbb-room-pro-version"] {
+	font-weight: 600;
+	color: #68a6cf;
 }
 
 .bbb-hosting-notice {
@@ -330,6 +340,8 @@
     margin: 10px 0 10px 0;
 }
 
-.bbb-rooms_page_bbb-room-server-settings ul {
+.bbb-rooms_page_bbb-room-server-settings ul,
+.bbb-rooms_page_bbb-room-shortcodes ul,
+.bbb-rooms_page_bbb-room-pro-features ul {
     list-style: inside;
 }

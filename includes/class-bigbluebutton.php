@@ -265,6 +265,7 @@ class VideoConferencingWithBBB {
 
 		// Create admin menu.
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'create_admin_menu' );
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'decorate_admin_submenu', 999 );
 		$this->loader->add_filter( 'parent_file', $plugin_admin, 'vcbbb_set_current_menu' );
 
 		// Add room metadata hooks.

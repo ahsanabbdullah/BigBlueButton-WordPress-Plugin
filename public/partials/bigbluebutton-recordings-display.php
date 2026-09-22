@@ -105,7 +105,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                                 aria-label="<?php echo esc_attr_x( 'Trash', 'post status', 'video-conferencing-with-bbb' ); ?>"></i>
 							&nbsp;
 							<span class="tooltip" onclick="copyToClipboard(this)" onmouseout="copyClipboardExit(this)"
-								data-value="<?php echo esc_url( $recording_url ); ?>">
+								data-value="<?php echo esc_url( $vcbbb_recording_url ); ?>">
 								<span class="tooltiptext recording-url-tooltip"><?php esc_html_e( 'Share Recording URL', 'video-conferencing-with-bbb' ); ?></span>
 								<span class="<?php echo esc_attr( $vcbbb_recording->share_icon_classes ); ?>"></span>
 							</span>

@@ -48,12 +48,70 @@ class VCBBB_Activator {
 			$blogs = get_sites();
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog->blog_id );
+				self::maybe_migrate_blindsidenetworks_test_server();
 				self::set_default_roles();
 				restore_current_blog();
 			}
 		} else {
+			self::maybe_migrate_blindsidenetworks_test_server();
 			self::set_default_roles();
 		}
+	}
+
+	/**
+	 * One-time upgrade: replace retired Blindside Networks public test credentials.
+	 *
+	 * Runs on admin_init before the stored plugin version is updated. Only sites
+	 * whose saved Endpoint URL points at test-install.blindsidenetworks.com are
+	 * changed. Custom / production BBB servers are left untouched.
+	 *
+	 * @since 3.2.1
+	 */
+	private static function maybe_migrate_blindsidenetworks_test_server() {
+		$stored_url = get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', '' ) );
+
+		// Source of truth is the retired Blindside test host, not the version option.
+		// Roles upgrade can bump video_conf_with_bbb_version to 3.2.1 first, which
+		// previously set the flag and skipped this replacement.
+		if ( self::is_legacy_blindsidenetworks_test_url( $stored_url ) ) {
+			update_option( 'vcbbb_url', VIDEO_CONF_WITH_BBB_ENDPOINT, false );
+			update_option( 'vcbbb_salt', VIDEO_CONF_WITH_BBB_SALT, false );
+			update_option( 'vcbbb_migrated_bn_test_server', 1, false );
+			return;
+		}
+
+		if ( get_option( 'vcbbb_migrated_bn_test_server' ) ) {
+			return;
+		}
+
+		$db_version = get_option( 'video_conf_with_bbb_version', '0' );
+		if ( version_compare( (string) $db_version, '3.2.1', '<' ) ) {
+			update_option( 'vcbbb_migrated_bn_test_server', 1, false );
+			return;
+		}
+
+		update_option( 'vcbbb_migrated_bn_test_server', 1, false );
+	}
+
+	/**
+	 * Whether a stored BBB URL is the retired Blindside Networks public test instance.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @param string $url Stored endpoint URL.
+	 * @return bool
+	 */
+	private static function is_legacy_blindsidenetworks_test_url( $url ) {
+		if ( empty( $url ) || ! is_string( $url ) ) {
+			return false;
+		}
+
+		$host = wp_parse_url( trim( $url ), PHP_URL_HOST );
+		if ( ! is_string( $host ) || '' === $host ) {
+			return false;
+		}
+
+		return ( 'test-install.blindsidenetworks.com' === strtolower( $host ) );
 	}
 
 	/**

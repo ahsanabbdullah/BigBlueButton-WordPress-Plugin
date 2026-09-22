@@ -15,7 +15,7 @@
  * Plugin Name:       Virtual Classroom & Video Conferencing - BigBlueButton
  * Plugin URI:        https://wordpress.org/plugins/video-conferencing-with-bbb
  * Description:       This plugin allows teachers to manage their virtual classrooms right from WordPress using BigBlueButton
- * Version:           3.1.1
+ * Version:           3.2.3
  * Author:            eLearning evolve
  * Author URI:        https://elearningevolve.com/
  * License:           GPL-2.0+
@@ -23,27 +23,27 @@
  * Text Domain:       video-conferencing-with-bbb
  * Domain Path:       /languages
  */
-$plugin_version = '3.1.1';
-$plugin_name    = 'Virtual Classroom & Video Conferencing - BigBlueButton';
+$video_conferencing_with_bbb_version = '3.2.3';
+$video_conferencing_with_bbb_name    = 'Virtual Classroom & Video Conferencing - BigBlueButton';
 
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'No direct access' );
 }
 
-$eevolve_constants = array(
-	'VIDEO_CONF_WITH_BBB_VERSION'     => esc_html( $plugin_version ),
-	'VIDEO_CONF_WITH_BBB_ENDPOINT'    => 'https://test-install.blindsidenetworks.com/bigbluebutton/',
-	'VIDEO_CONF_WITH_BBB_SALT'        => '8cd8ef52e8e101574e400365b55e11a6',
-	'VIDEO_CONF_WITH_BBB_PLUGIN_NAME' => esc_html( $plugin_name ),
+$video_conferencing_with_bbb_constants = array(
+	'VIDEO_CONF_WITH_BBB_VERSION'     => esc_html( $video_conferencing_with_bbb_version ),
+	'VIDEO_CONF_WITH_BBB_ENDPOINT'    => 'https://biggerbluebutton.com/bigbluebutton/adeel/',
+	'VIDEO_CONF_WITH_BBB_SALT'        => 'WiPnqTo2adzr4C8XKZlWXaWp9RtIgYB1zEyTgJjgaBs',
+	'VIDEO_CONF_WITH_BBB_PLUGIN_NAME' => esc_html( $video_conferencing_with_bbb_name ),
 	'VIDEO_CONF_WITH_BBB_PUBLIC_PATH' => __DIR__ . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR,
 	'VIDEO_CONF_WITH_BBB_IMG_URL'     => plugin_dir_url( __FILE__ ) . '/images',
 	'VIDEO_CONF_WITH_BBB_PRO'         => esc_url( 'https://elearningevolve.com/products/wp-virtual-classroom/' ),
 );
 
-foreach ( $eevolve_constants as $constant => $value ) {
-	if ( ! defined( $constant ) ) {
-		define( $constant, $value );
+foreach ( $video_conferencing_with_bbb_constants as $video_conferencing_with_bbb_constant => $video_conferencing_with_bbb_value ) {
+	if ( ! defined( $video_conferencing_with_bbb_constant ) ) {
+		define( $video_conferencing_with_bbb_constant, $video_conferencing_with_bbb_value );
 	}
 }
 
@@ -135,10 +135,10 @@ function video_conf_vcbbb_check_conflict( $is_echo = true ) {
 		foreach ( $plugins as $basename => $plugin ) {
 			if (
 				is_plugin_active( $basename ) || is_plugin_active_for_network( $basename )
-				|| defined( $plugin['class'] ) || ( isset( $_REQUEST['plugin'] ) && isset( $_REQUEST['action'] ) && 'activate' == $_REQUEST['action'] && $basename == $_REQUEST['plugin'] )
+				|| defined( $plugin['class'] ) || ( isset( $_REQUEST['plugin'], $_REQUEST['action'] ) && 'activate' === sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) && $basename === sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Plugin activation request from WordPress.
 			) {
 
-				if ( isset( $_GET['activate'] ) ) {
+				if ( isset( $_GET['activate'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Core activation query flag.
 					unset( $_GET['activate'] );
 				}
 

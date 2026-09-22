@@ -35,7 +35,7 @@ class EE_VCBBB_Helper {
 
 		if ( $user && $user->display_name ) {
 			$username = sanitize_text_field( $user->display_name );
-		} elseif ( isset( $_GET['bbb_meeting_username'] ) ) {
+		} elseif ( isset( $_GET['bbb_meeting_username'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public join query string.
 			$username = sanitize_text_field( wp_unslash( $_GET['bbb_meeting_username'] ) );
 		}
 
@@ -67,10 +67,66 @@ class EE_VCBBB_Helper {
 						'room_id'        => $room_id,
 						'username'       => $username,
 					);
-					wp_redirect( add_query_arg( $query, $return_url ) );
-					exit;
+					self::safe_redirect( add_query_arg( $query, $return_url ) );
 				}
 			}
 		}
+	}
+
+	/**
+	 * Timezone string compatible with WordPress 5.1+.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @return string
+	 */
+	public static function get_timezone_string() {
+		if ( function_exists( 'wp_timezone_string' ) ) {
+			return wp_timezone_string();
+		}
+
+		$timezone = get_option( 'timezone_string' );
+		if ( ! empty( $timezone ) ) {
+			return $timezone;
+		}
+
+		return 'UTC';
+	}
+
+	/**
+	 * Redirect to a same-site URL.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param string $url Destination URL.
+	 */
+	public static function safe_redirect( $url ) {
+		wp_safe_redirect( esc_url_raw( $url ) );
+		exit;
+	}
+
+	/**
+	 * Redirect to a plugin-generated BigBlueButton join URL.
+	 *
+	 * @since 3.2.3
+	 *
+	 * @param string $url Destination URL from the BBB API.
+	 */
+	public static function safe_redirect_bbb( $url ) {
+		$url  = esc_url_raw( $url );
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+
+		if ( ! empty( $host ) ) {
+			add_filter(
+				'allowed_redirect_hosts',
+				static function ( $hosts ) use ( $host ) {
+					$hosts[] = $host;
+					return $hosts;
+				}
+			);
+		}
+
+		wp_safe_redirect( $url );
+		exit;
 	}
 }

@@ -487,7 +487,7 @@ class VCBBB_Api {
 			);
 
 			$settings = apply_filters( 'vcbbb_room_server_settings_display', $settings );
-			$settings = apply_filters( 'bbb_room_server_settings_display', $settings );
+			$settings = apply_filters( 'bbb_room_server_settings_display', $settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatible Pro hook.
 
 			// Support both free (vcbbb_*) and Pro (bbb_*) key formats.
 			$url_val  = sanitize_text_field( isset( $settings['vcbbb_url'] ) ? $settings['vcbbb_url'] : ( isset( $settings['bbb_url'] ) ? $settings['bbb_url'] : '' ) );

@@ -57,7 +57,11 @@ class VCBBB_Public_Room_Api {
 	 * @since   3.0.0
 	 */
 	public function vcbbb_user_join_room() {
-		if ( isset( $_GET['room_id'] ) && ! empty( $_GET['action'] ) && 'join_room' == $_GET['action'] && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['vcbbb_join_room_meta_nonce'] ) ), 'vcbbb_join_room_meta_nonce' ) ) {
+		if (
+			isset( $_GET['room_id'], $_GET['action'], $_GET['vcbbb_join_room_meta_nonce'] )
+			&& 'join_room' === sanitize_text_field( wp_unslash( $_GET['action'] ) )
+			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['vcbbb_join_room_meta_nonce'] ) ), 'vcbbb_join_room_meta_nonce' )
+		) {
 			$room_id                  = sanitize_text_field( wp_unslash( $_GET['room_id'] ) );
 			$user                     = wp_get_current_user();
 			$entry_code               = '';
@@ -67,7 +71,7 @@ class VCBBB_Public_Room_Api {
 			$access_using_code        = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_with_access_code_bbb_room' );
 			$access_as_moderator      = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_moderator_bbb_room' );
 			$access_as_viewer         = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_viewer_bbb_room' );
-			$return_url               = esc_url_raw( wp_unslash( $_GET['current_page'] ) );
+			$return_url               = isset( $_GET['current_page'] ) ? esc_url_raw( wp_unslash( $_GET['current_page'] ) ) : home_url( '/' );
 			$room_limit_post          = intval( isset( $_GET['post_id'] ) ? get_post_meta( sanitize_text_field( wp_unslash( $_GET['post_id'] ) ), 'bbb_pro_room_limit', true ) : 0 );
 			$room_limit_cpt           = intval( get_post_meta( $room_id, 'bbb-room-limit', true ) );
 			$room_limit_global        = intval( get_option( 'bbb_pro_max_participants' ) );
@@ -93,11 +97,37 @@ class VCBBB_Public_Room_Api {
 						'room_id'        => $room_id,
 						'username'       => $username,
 					);
-					wp_redirect( add_query_arg( $query, $return_url ) );
+					wp_safe_redirect( add_query_arg( $query, $return_url ) );
 					exit;
 				}
 			} else {
 				wp_die( esc_html__( 'You do not have permission to enter the room. Please request permission.', 'video-conferencing-with-bbb' ) );
+			}
+
+			$is_access_code_guest = (
+				$access_using_code
+				&& ! $access_as_moderator
+				&& ! $access_as_viewer
+				&& ! ( ( $room_post = get_post( $room_id ) ) && $room_post->post_author == $user->ID )
+			);
+
+			if ( $is_access_code_guest ) {
+				$wants_join_meeting = isset( $_GET['vcbbb_join_meeting'] ) && '1' === sanitize_text_field( wp_unslash( $_GET['vcbbb_join_meeting'] ) );
+				$has_recording_access = VCBBB_Tokens_Helper::is_authenticated_access_code_guest( $room_id );
+
+				if ( ! $wants_join_meeting || ! $has_recording_access ) {
+					$guest_session = VCBBB_Tokens_Helper::create_guest_room_session( $room_id, $username, $entry_code );
+					wp_safe_redirect(
+						add_query_arg(
+							array(
+								'vcbbb_guest_session' => $guest_session,
+								'room_id'             => $room_id,
+							),
+							$return_url
+						)
+					);
+					exit;
+				}
 			}
 
 			EE_VCBBB_Helper::check_room_limit( $room_id, $username, $return_url, $room_limit_global, $room_limit_cpt, $room_limit_post );
@@ -115,10 +145,14 @@ public function get_join_form() {
 	$response            = array();
 	$response['success'] = false;
 
-	if ( array_key_exists( 'room_id', $_POST ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'vcbbb_view_join_form' ) ) {
+		wp_send_json( $response );
+	}
+
+	if ( isset( $_POST['room_id'] ) ) {
 
 		// Sanitize room ID as a positive integer
-		$room_id = isset( $_POST['room_id'] ) ? absint( wp_unslash( $_POST['room_id'] ) ) : 0;
+		$room_id = absint( wp_unslash( $_POST['room_id'] ) );
 
 		$access_using_code   = VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_with_access_code_bbb_room' );
 		$access_as_moderator = ( 
@@ -199,8 +233,7 @@ public function get_join_form() {
 
 		if ( $entry_code == $viewer_code && 'true' == $wait_for_mod ) {
 			if ( VCBBB_Api::is_meeting_running( $room_id ) ) {
-				wp_redirect( $join_url );
-				exit;
+				EE_VCBBB_Helper::safe_redirect_bbb( $join_url );
 			} else {
 				$query = array(
 					'vcbbb_wait_for_mod' => true,
@@ -215,12 +248,11 @@ public function get_join_form() {
 				if ( ! $access_as_viewer ) {
 					$query['temp_entry_pass'] = wp_create_nonce( 'vcbbb_entry_code_' . $entry_code );
 				}
-				wp_redirect( add_query_arg( $query, $return_url ) );
+				wp_safe_redirect( add_query_arg( $query, $return_url ) );
 				exit;
 			}
 		} else {
-			wp_redirect( $join_url );
-			exit;
+			EE_VCBBB_Helper::safe_redirect_bbb( $join_url );
 		}
 	}
 }

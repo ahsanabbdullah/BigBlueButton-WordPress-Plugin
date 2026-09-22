@@ -88,8 +88,11 @@ class VCBBB_Tokens_Helper {
 				'room_name' => get_the_title( $room_id ),
 			);
 
-			if ( isset( $_REQUEST['room_id'] ) && ( $_REQUEST['room_id'] == $room_id || base64_decode( $_REQUEST['room_id'] ) == $room_id ) ) {
-				$selected_room_id = $room_id;
+			if ( isset( $_REQUEST['room_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Selected room from join form.
+				$vcbbb_request_room_id = sanitize_text_field( wp_unslash( $_REQUEST['room_id'] ) );
+				if ( $vcbbb_request_room_id == $room_id || base64_decode( $vcbbb_request_room_id ) == $room_id ) {
+					$selected_room_id = $room_id;
+				}
 			}
 		}
 
@@ -146,11 +149,202 @@ class VCBBB_Tokens_Helper {
 			$room_ids[] = $room_id;
 		}
 
+		if ( ! $manage_recordings ) {
+			$room_ids = array_values( array_filter( $room_ids, array( __CLASS__, 'current_user_can_view_room_recordings' ) ) );
+		}
+
+		if ( empty( $room_ids ) ) {
+			return $content;
+		}
+
 		$recordings = self::get_recordings( $room_ids );
 		if ( count( $room_ids ) > 0 ) {
 			$content .= $display_helper->get_collapsable_recordings_view_as_string( $room_ids[0], $recordings, $manage_recordings, $view_extended_recording_formats );
 		}
 		return $content;
+	}
+
+	/**
+	 * Create a short-lived guest session after access-code authentication.
+	 *
+	 * @param int    $room_id    Room post ID.
+	 * @param string $username   Guest display name.
+	 * @param string $entry_code Validated room access code.
+	 * @return string Session token for the current visit.
+	 */
+	public static function create_guest_room_session( $room_id, $username, $entry_code ) {
+		$room_id = absint( $room_id );
+		$username = sanitize_text_field( $username );
+		$entry_code = sanitize_text_field( $entry_code );
+
+		if ( ! $room_id || '' === $username || '' === $entry_code ) {
+			return '';
+		}
+
+		$token = wp_generate_password( 32, false, false );
+		$ttl   = (int) apply_filters( 'vcbbb_guest_room_session_lifetime', 2 * HOUR_IN_SECONDS, $room_id );
+		$data  = array(
+			'room_id'    => $room_id,
+			'username'   => $username,
+			'entry_code' => $entry_code,
+		);
+
+		set_transient( self::get_guest_session_transient_key( $token ), $data, $ttl );
+
+		return $token;
+	}
+
+	/**
+	 * Remove any legacy guest auth cookies from older plugin versions.
+	 *
+	 * @param int $room_id Room post ID.
+	 */
+	public static function clear_legacy_guest_room_cookies( $room_id ) {
+		$room_id = absint( $room_id );
+		if ( ! $room_id || headers_sent() ) {
+			return;
+		}
+
+		$path   = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
+		$domain = defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ? COOKIE_DOMAIN : '';
+		$expire = time() - YEAR_IN_SECONDS;
+		$cookies = array(
+			'vcbbb_recording_access_' . $room_id,
+			'vcbbb_guest_auth_' . $room_id,
+		);
+
+		foreach ( $cookies as $cookie_name ) {
+			if ( isset( $_COOKIE[ $cookie_name ] ) ) {
+				setcookie( $cookie_name, '', $expire, $path, $domain, is_ssl(), true );
+				unset( $_COOKIE[ $cookie_name ] );
+			}
+		}
+	}
+
+	/**
+	 * Whether the visitor is an access-code-only guest who has authenticated for this room.
+	 *
+	 * @param int $room_id Room post ID.
+	 * @return bool
+	 */
+	public static function is_authenticated_access_code_guest( $room_id ) {
+		return (bool) self::get_guest_session_data( $room_id );
+	}
+
+	/**
+	 * Whether the visitor must authenticate before recordings are shown.
+	 *
+	 * @param int $room_id Room post ID.
+	 * @return bool
+	 */
+	public static function requires_access_code_auth_for_recordings( $room_id ) {
+		$room_id = absint( $room_id );
+		if ( ! $room_id || ! VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_with_access_code_bbb_room' ) ) {
+			return false;
+		}
+
+		if ( VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_moderator_bbb_room' ) || VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_viewer_bbb_room' ) ) {
+			return false;
+		}
+
+		$room_post = get_post( $room_id );
+		if ( $room_post && (int) $room_post->post_author === get_current_user_id() ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get the guest session token from the current request.
+	 *
+	 * @return string
+	 */
+	public static function get_guest_session_token_from_request() {
+		if ( empty( $_REQUEST['vcbbb_guest_session'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Guest session token from redirect.
+			return '';
+		}
+
+		return sanitize_text_field( wp_unslash( $_REQUEST['vcbbb_guest_session'] ) );
+	}
+
+	/**
+	 * Get stored guest auth details for an authenticated access-code visitor.
+	 *
+	 * @param int $room_id Room post ID.
+	 * @return array|null
+	 */
+	public static function get_room_guest_auth( $room_id ) {
+		$session = self::get_guest_session_data( $room_id );
+		if ( ! $session ) {
+			return null;
+		}
+
+		return array(
+			'username'   => $session['username'],
+			'entry_code' => $session['entry_code'],
+			'token'      => $session['token'],
+		);
+	}
+
+	/**
+	 * Get validated guest session data for the current request.
+	 *
+	 * @param int $room_id Room post ID.
+	 * @return array|null
+	 */
+	private static function get_guest_session_data( $room_id ) {
+		$room_id = absint( $room_id );
+		if ( ! $room_id || ! self::requires_access_code_auth_for_recordings( $room_id ) ) {
+			return null;
+		}
+
+		$token = self::get_guest_session_token_from_request();
+		if ( '' === $token ) {
+			return null;
+		}
+
+		$data = get_transient( self::get_guest_session_transient_key( $token ) );
+		if ( ! is_array( $data ) || empty( $data['room_id'] ) || (int) $data['room_id'] !== $room_id ) {
+			return null;
+		}
+
+		$data['token'] = $token;
+		return $data;
+	}
+
+	/**
+	 * Build the transient key for a guest session token.
+	 *
+	 * @param string $token Session token.
+	 * @return string
+	 */
+	private static function get_guest_session_transient_key( $token ) {
+		return 'vcbbb_guest_session_' . sanitize_key( $token );
+	}
+
+	/**
+	 * Check whether the current visitor can see recordings for a room.
+	 *
+	 * @param int $room_id Room post ID.
+	 * @return bool
+	 */
+	public static function current_user_can_view_room_recordings( $room_id ) {
+		$room_id = absint( $room_id );
+		if ( ! $room_id ) {
+			return false;
+		}
+
+		$room_post = get_post( $room_id );
+		if ( $room_post && (int) $room_post->post_author === get_current_user_id() ) {
+			return true;
+		}
+
+		if ( VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_moderator_bbb_room' ) || VCBBB_Permissions_Helper::user_has_bbb_cap( 'join_as_viewer_bbb_room' ) ) {
+			return true;
+		}
+
+		return (bool) self::get_guest_session_data( $room_id );
 	}
 
 	/**
@@ -160,29 +354,17 @@ class VCBBB_Tokens_Helper {
 	 * @return bool True if user has any allowed role, false otherwise.
 	 */
 	public static function is_current_user_in_allowed_roles( $author_id ) {
-		global $wpdb;
-
 		$allowed_roles = apply_filters(
 			'vcbbb_moderator_user_roles', array( 'administrator', 'bbb-moderator', 'ld-instructor', 'wdm_instructor', 'group_leader' )
 		);
 
-		$roles = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT meta_value 
-				FROM $wpdb->usermeta 
-				WHERE user_id = %d 
-				AND meta_key = '{$wpdb->prefix}capabilities'
-				",
-				intval( $author_id )
-			)
-		);
-
-		$user_role = array();
-		if ( isset( $roles->meta_value ) ) {
-			$roles      = maybe_unserialize( $roles->meta_value ); // It is a serialized array
-			$user_roles = array_keys( $roles );
-			$user_role  = ! empty( $user_roles ) ? $user_roles[0] : '';
+		$user = get_userdata( $author_id );
+		if ( ! $user ) {
+			return false;
 		}
+
+		$user_roles = (array) $user->roles;
+		$user_role  = ! empty( $user_roles ) ? $user_roles[0] : '';
 
 		if ( ! $user_role ) {
 			return false;
@@ -231,7 +413,7 @@ class VCBBB_Tokens_Helper {
 		}
 
 		// Elementor checks
-		if ( ( isset( $_REQUEST['action'] ) && 'elementor_ajax' == $_REQUEST['action'] ) || isset( $_GET['elementor-preview'] ) ) {
+		if ( ( isset( $_REQUEST['action'] ) && 'elementor_ajax' === sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) ) || isset( $_GET['elementor-preview'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Elementor editor request flags.
 			$can_view = false;
 		}
 
@@ -288,7 +470,7 @@ class VCBBB_Tokens_Helper {
 			),
 		);
 
-		$query = new WP_Query( $args );
+		$query = new WP_Query( $args ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Token lookup by room meta.
 		if ( ! empty( $query->posts ) ) {
 			foreach ( $query->posts as $key => $room_id ) {
 				$room = get_post( $room_id );
@@ -300,7 +482,14 @@ class VCBBB_Tokens_Helper {
 			}
 		}
 
-		self::set_error_message( sprintf( wp_kses( __( 'The token: %s is not associated with an existing room.', 'video-conferencing-with-bbb' ), array() ), $token ), $author );
+		self::set_error_message(
+			sprintf(
+				/* translators: %s: room token */
+				wp_kses( __( 'The token: %s is not associated with an existing room.', 'video-conferencing-with-bbb' ), array() ),
+				$token
+			),
+			$author
+		);
 		return 0;
 	}
 

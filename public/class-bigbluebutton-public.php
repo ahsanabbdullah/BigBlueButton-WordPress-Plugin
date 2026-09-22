@@ -104,6 +104,7 @@ class VCBBB_Public {
 			'protected'           => __( 'Protected', 'video-conferencing-with-bbb' ),
 			'unprotected'         => __( 'Unprotected', 'video-conferencing-with-bbb' ),
 			'ajax_url'            => admin_url( 'admin-ajax.php' ),
+			'join_form_nonce'     => wp_create_nonce( 'vcbbb_view_join_form' ),
 		);
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/bigbluebutton-public.js', array( 'jquery', 'wp-i18n' ), $this->version, true );

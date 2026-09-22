@@ -61,11 +61,12 @@ class VCBBB_Display_Helper {
 		$args['current_page']             = get_permalink();
 		$args['post_id']                  = sanitize_text_field( ( isset( $post->ID ) ? $post->ID : 0 ) );
 		$url                              = add_query_arg( $args, get_permalink() );
-		$_REQUEST['room_id']              = ( isset( $_REQUEST['room_id'] ) ? $_REQUEST['room_id'] : 0 );
+		$_REQUEST['room_id']              = isset( $_REQUEST['room_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['room_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Join form selected room.
 
 		if ( $start_time ) {
-			$dt     = new DateTime( $start_time, new DateTimeZone( wp_timezone_string() ) );
-			$dt_now = new DateTime( 'now', new DateTimeZone( wp_timezone_string() ) );
+			$vcbbb_timezone = EE_VCBBB_Helper::get_timezone_string();
+			$dt             = new DateTime( $start_time, new DateTimeZone( $vcbbb_timezone ) );
+			$dt_now         = new DateTime( 'now', new DateTimeZone( $vcbbb_timezone ) );
 
 			if ( $dt_now >= $dt ) {
 				// Meeting should start now
@@ -90,6 +91,25 @@ class VCBBB_Display_Helper {
 		// If set from plugin settings then override all
 		if ( get_option( 'bbb_pro_join_here_text' ) ) {
 			$join_btn = get_option( 'bbb_pro_join_here_text' );
+		}
+
+		$requires_access_code_auth = VCBBB_Tokens_Helper::requires_access_code_auth_for_recordings( $room_id );
+		$guest_authenticated       = VCBBB_Tokens_Helper::is_authenticated_access_code_guest( $room_id );
+		$guest_room_auth           = $guest_authenticated ? VCBBB_Tokens_Helper::get_room_guest_auth( $room_id ) : null;
+
+		if ( $requires_access_code_auth && ! $guest_authenticated ) {
+			VCBBB_Tokens_Helper::clear_legacy_guest_room_cookies( $room_id );
+		}
+
+		if ( $guest_authenticated && ! empty( $guest_room_auth['token'] ) ) {
+			$args['current_page'] = add_query_arg(
+				array(
+					'vcbbb_guest_session' => $guest_room_auth['token'],
+					'room_id'             => $room_id,
+				),
+				$args['current_page']
+			);
+			$url = add_query_arg( $args, get_permalink() );
 		}
 
 		ob_start();

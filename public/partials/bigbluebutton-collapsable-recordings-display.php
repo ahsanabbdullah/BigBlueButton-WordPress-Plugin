@@ -1,10 +1,15 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'No direct access' );
+}
+?>
 <div class="bbb-recording-display-block">
 	<div id="bbb-recordings-display-<?php echo esc_attr( $room_id ); ?>" class="bbb-recordings-display">
 		<i class="dashicons dashicons-arrow-down-alt2"></i>
 		<p class="bbb-expandable-header"><?php esc_html_e( 'Collapse recordings', 'video-conferencing-with-bbb' ); ?></p>
 	</div>
 	<?php
-	$allowed_recordings_html = array(
+	$vcbbb_allowed_recordings_html = array(
 		'div'    => array(
 			'id'    => true,
 			'class' => true,
@@ -54,6 +59,6 @@
 			'class' => true,
 		),
 	);
-	echo wp_kses( $html_recordings, $allowed_recordings_html );
+	echo wp_kses( $html_recordings, $vcbbb_allowed_recordings_html );
 	?>
 </div>

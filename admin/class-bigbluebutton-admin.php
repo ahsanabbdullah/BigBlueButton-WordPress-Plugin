@@ -117,16 +117,14 @@ class VCBBB_Admin {
 			'dashicons-video-alt2',
 			65
 		);
-		if ( ! VCBBB_Admin_Helper::check_posts() ) {
-			add_submenu_page(
-				'vcbbb_room',
-				__( 'Add New', 'video-conferencing-with-bbb' ),
-				__( 'Add New', 'video-conferencing-with-bbb' ),
-				'add_bbb_rooms',
-				'post-new.php?post_type=bbb-room',
-				''
-			);
-		}
+		add_submenu_page(
+			'vcbbb_room',
+			__( 'Add New', 'video-conferencing-with-bbb' ),
+			__( 'Add New', 'video-conferencing-with-bbb' ),
+			'add_bbb_rooms',
+			'post-new.php?post_type=bbb-room',
+			''
+		);
 
 		if ( current_user_can( 'manage_categories' ) ) {
 			add_submenu_page(
@@ -340,7 +338,7 @@ class VCBBB_Admin {
 	 * @since   3.0.0
 	 */
 	public function redirect_to_pro_version() {
-		wp_register_script( 'video-conf-bbb-dummy-js-header', '', );
+		wp_register_script( 'video-conf-bbb-dummy-js-header', '', array(), $this->version, true );
 		wp_enqueue_script( 'video-conf-bbb-dummy-js-header' );
 		wp_add_inline_script(
 			'video-conf-bbb-dummy-js-header',
@@ -367,18 +365,9 @@ class VCBBB_Admin {
 		$user_email     = ( isset( $user->user_email ) ? $user->user_email : '' );
 		$display_name   = ( isset( $user->display_name ) ? $user->display_name : '' );
 
-		//Get the active tab from the $_GET param
+		// Get the active tab from the $_GET param.
 		$default_tab = null;
-		$tab         = isset( $_GET['tab'] ) ? $_GET['tab'] : $default_tab;
-
-		if ( VCBBB_Loader::is_bbb_pro_active() ) {
-			$bbb_host = '<a target="_blank" rel="noopener" href="https://bigbluebutton.host">Bigbluebutton.host</a>';
-		} else {
-			$bbb_host = '<a target="_blank" rel="noopener" href="https://blindsidenetworks.com/">Blindside Networks</a>';
-		}
-
-		// Sanitize the tab parameter from URL
-        $tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : $default_tab;
+		$tab         = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : $default_tab; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin settings tab navigation.
 
 		require_once 'partials/bigbluebutton-settings-display.php';
 	}
@@ -425,7 +414,7 @@ class VCBBB_Admin {
 		// Check "upgrade_notice".
 		if ( isset( $new_plugin_metadata->upgrade_notice ) && strlen( trim( $new_plugin_metadata->upgrade_notice ) ) > 0 ) {
 			echo '<div style="background-color: #d54e21; padding: 10px; color: #f9f9f9; margin-top: 10px"><strong>Important Upgrade Notice:</strong> ';
-			echo esc_html( strip_tags( $new_plugin_metadata->upgrade_notice ) ), '</div>';
+			echo esc_html( wp_strip_all_tags( $new_plugin_metadata->upgrade_notice ) ), '</div>';
 		}
 	}
 
@@ -458,8 +447,20 @@ class VCBBB_Admin {
 	 *                          3 - bad bigbluebutton settings configuration
 	 */
 	private function room_server_settings_change() {
-		if ( ! empty( $_POST['action'] ) && 'vcbbb_general_settings' == wp_unslash( $_POST['action'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['vcbbb_edit_server_settings_meta_nonce'] ) ), 'vcbbb_edit_server_settings_meta_nonce' ) ) {
-			if ( isset( $_POST['vcbbb_url'] ) ) {
+		if ( ! isset( $_POST['action'], $_POST['vcbbb_edit_server_settings_meta_nonce'] ) ) {
+			return 0;
+		}
+
+		$vcbbb_settings_action = sanitize_text_field( wp_unslash( $_POST['action'] ) );
+		if ( 'vcbbb_general_settings' !== $vcbbb_settings_action ) {
+			return 0;
+		}
+
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['vcbbb_edit_server_settings_meta_nonce'] ) ), 'vcbbb_edit_server_settings_meta_nonce' ) ) {
+			return 0;
+		}
+
+		if ( isset( $_POST['vcbbb_url'], $_POST['vcbbb_salt'] ) ) {
 				$bbb_url  = sanitize_text_field( wp_unslash( $_POST['vcbbb_url'] ) );
 				$bbb_salt = sanitize_text_field( wp_unslash( $_POST['vcbbb_salt'] ) );
 
@@ -479,12 +480,10 @@ class VCBBB_Admin {
 				update_option( 'vcbbb_url', $bbb_url, false );
 				update_option( 'vcbbb_salt', $bbb_salt, false );
 			}
-	
+
 			do_action( 'vcbbb_settings_form_save' );
-	
+
 			return 1;
-		}
-		return 0;
 	}
 
 	/**
@@ -518,15 +517,6 @@ class VCBBB_Admin {
 			if ( isset( $current_screen->id ) && ! in_array( $current_screen->id, $allowed ) ) {
 				return;
 			}
-		}
-
-		$bbb_warning_type = 'vcbbb-review-plugin';
-		if ( VCBBB_Admin_Helper::check_posts() ) {
-			$bbb_admin_review_message = '<strong>' . VIDEO_CONF_WITH_BBB_PLUGIN_NAME . ':</strong> You have reached the max room create limit. The free version allows to add only 2 new BBB rooms. To create unlimited rooms activate the Pro version';
-			$bbb_admin_notice_nonce   = wp_create_nonce( $bbb_warning_type );
-			$type                     = 'room_create_limit';
-			$notice_type              = 'error';
-			include 'partials/bigbluebutton-admin-notice.php';
 		}
 
 		$bbb_warning_type = 'vcbbb-review-plugin';
@@ -571,11 +561,15 @@ class VCBBB_Admin {
 		$post_type = 'bbb-room'; // change to your post type
 		$taxonomy  = 'bbb-room-category'; // change to your taxonomy
 		if ( $typenow == $post_type ) {
-			$selected      = isset( $_GET[ $taxonomy ] ) ? $_GET[ $taxonomy ] : '';
+			$selected      = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( $_GET[ $taxonomy ] ) ) : '';
 			$info_taxonomy = get_taxonomy( $taxonomy );
 			wp_dropdown_categories(
 				array(
-					'show_option_all' => sprintf( __( 'Show all %s', 'video-conferencing-with-bbb' ), $info_taxonomy->label ),
+					'show_option_all' => sprintf(
+						/* translators: %s: taxonomy label */
+						__( 'Show all %s', 'video-conferencing-with-bbb' ),
+						$info_taxonomy->label
+					),
 					'taxonomy'        => $taxonomy,
 					'name'            => $taxonomy,
 					'orderby'         => 'name',
@@ -625,7 +619,7 @@ class VCBBB_Admin {
 
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
-			if ( $screen && 'edit' == $screen->base && 'bbb-room' == $screen->post_type && ! isset( $_GET['orderby'] ) ) {
+			if ( $screen && 'edit' == $screen->base && 'bbb-room' == $screen->post_type && ! isset( $_GET['orderby'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin list table sort flag.
 				$query->set( 'orderby', 'menu_order' );
 				$query->set( 'order', 'ASC' );
 			}
@@ -649,7 +643,7 @@ if ( ! wp_verify_nonce( $nonce, 'start_meeting' ) ) {
 }
 
 		$access_code = sanitize_text_field( wp_unslash( $_GET['code'] ) );
-		$room_id     = absint( $_GET['room_id'] );
+		$room_id     = isset( $_GET['room_id'] ) ? absint( wp_unslash( $_GET['room_id'] ) ) : 0;
 		$user        = wp_get_current_user();
 		$username    = ( $user && ! empty( $user->display_name ) ) ? $user->display_name : ( $user && ! empty( $user->user_login ) ? $user->user_login : __( 'Moderator', 'video-conferencing-with-bbb' ) );
 
@@ -662,8 +656,7 @@ if ( ! wp_verify_nonce( $nonce, 'start_meeting' ) ) {
 			wp_die( esc_html__( 'Unable to create or join the meeting. Please check your BigBlueButton server settings.', 'video-conferencing-with-bbb' ) );
 		}
 
-		wp_redirect( $join_url );
-		exit;
+		EE_VCBBB_Helper::safe_redirect_bbb( $join_url );
 	}
 
 	/**

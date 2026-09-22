@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'No direct access' );
+}
+?>
 <div class="zvc-row">
 	<div class="zvc-position-floater-left">			
 		<div class="bbb-settings-card">
@@ -36,10 +41,25 @@
 						<br />
 						<label id="endpoint-url-note">
 							<?php
+							$vcbbb_default_notice  = '<h4><strong class="bbb-hosting-notice">' . esc_html__( 'Endpoint URL & Secret:', 'video-conferencing-with-bbb' ) . '</strong> ';
+							$vcbbb_default_notice .= sprintf(
+								/* translators: 1: opening anchor tag, 2: closing anchor tag */
+								esc_html__( 'The default credentials are for testing only. After testing, %1$slog in or create a Blindside Networks account%2$s, choose a free or paid plan, then replace these with your own Endpoint URL and Shared Secret.', 'video-conferencing-with-bbb' ),
+								'<a rel="noopener" href="https://blindsidenetworks.com/" target="_blank">',
+								'</a>'
+							);
+							$vcbbb_default_notice .= '<p><strong class="bbb-hosting-notice">' . esc_html__( 'Important:', 'video-conferencing-with-bbb' ) . '</strong> ';
+							$vcbbb_default_notice .= sprintf(
+								/* translators: 1: opening anchor tag, 2: closing anchor tag */
+								esc_html__( 'Review the %1$shosting guide%2$s before joining the virtual classroom', 'video-conferencing-with-bbb' ),
+								'<a rel="noopener" href="https://elearningevolve.com/blog/hosting-virtual-classroom-for-wordpress" target="_blank">',
+								'</a>'
+							);
+							$vcbbb_default_notice .= '</p></h4>';
 						echo wp_kses(
     apply_filters(
         'vcbbb_room_default_server_notice',
-        __( '<h4><strong class="bbb-hosting-notice">Endpoint URL & Secret:</strong> The default credentials are using a DEVELOPMENT level BigBlueButton server provided by <a rel="noopener" href="https://blindsidenetworks.com/" target="_blank">Blindside Networks</a> you MUST replace them with the credentials from a PRODUCTION-level server on your live site.' . "\n" . '<p><strong class="bbb-hosting-notice">Important:</strong>' . "\n" . 'Review the <a rel="noopener" href="https://elearningevolve.com/blog/hosting-virtual-classroom-for-wordpress" target="_blank">hosting guide</a> before joining the virtual classroom</p>' . "\n" . '</h4>', 'video-conferencing-with-bbb' )
+        $vcbbb_default_notice
     ),
     array(
         'a'      => array(
@@ -207,7 +227,7 @@
 	</div>
 	<div class="zvc-position-floater-right">
 		<div class="zvc-information-sec">
-			<img width="70%" height="25" src="<?php echo VIDEO_CONF_WITH_BBB_IMG_URL . '/learndash-logo.webp'; ?>" title="LearnDash LMS Development Service" alt="LearnDash LMS Development Service"/>
+			<img width="70%" height="25" src="<?php echo esc_url( VIDEO_CONF_WITH_BBB_IMG_URL . '/learndash-logo.webp' ); ?>" title="LearnDash LMS Development Service" alt="LearnDash LMS Development Service"/>
 				<h3>Need help with LMS Building?</h3>
 				<p>Being officially recognized as LearnDash LMS experts, we're here to aid you with your customization needs.</p>
 				<a target="_blank" rel="noopener"

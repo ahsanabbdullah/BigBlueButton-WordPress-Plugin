@@ -32,7 +32,7 @@ class VCBBB_I18n {
 	 */
 	public function load_plugin_textdomain() {
 
-		load_plugin_textdomain(
+		load_plugin_textdomain( // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- Kept for non-WordPress.org installs.
 			'video-conferencing-with-bbb',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'

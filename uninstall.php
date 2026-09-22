@@ -56,10 +56,10 @@ if ( ! class_exists( 'VCBBB_Uninstall' ) ) {
 		 */
 		private static function trash_rooms_and_categories() {
 			global $wpdb;
-			$wpdb->query( 'DELETE FROM wp_postmeta WHERE post_id in (SELECT id from wp_posts where post_type="bbb-room");' );
-			$wpdb->query( 'DELETE FROM wp_term_relationships WHERE term_taxonomy_id in (SELECT term_taxonomy_id from wp_term_taxonomy WHERE taxonomy="bbb-room-category");' );
-			$wpdb->query( 'DELETE FROM wp_posts WHERE post_type="bbb-room";' );
-			$wpdb->query( 'DELETE FROM wp_term_taxonomy WHERE taxonomy="bbb-room-category";' );
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE post_id IN (SELECT ID FROM {$wpdb->posts} WHERE post_type = %s)", 'bbb-room' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup.
+			$wpdb->query( "DELETE FROM {$wpdb->term_relationships} WHERE term_taxonomy_id IN (SELECT term_taxonomy_id FROM {$wpdb->term_taxonomy} WHERE taxonomy = 'bbb-room-category')" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Uninstall cleanup.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->posts} WHERE post_type = %s", 'bbb-room' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup.
+			$wpdb->query( "DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy = 'bbb-room-category'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Uninstall cleanup.
 		}
 
 		/**
@@ -134,6 +134,7 @@ if ( ! class_exists( 'VCBBB_Uninstall' ) ) {
 			delete_option( 'vcbbb_default_roles_set' );
 			delete_option( 'bigbluebutton_default_roles_set' );
 			delete_option( 'video_conf_with_bbb_version' );
+			delete_option( 'vcbbb_migrated_bn_test_server' );
 			delete_option( 'ee_bb_default_bbb_room' );
 			delete_option( 'bbb_flush_incorrect_caps_once' );
 		}

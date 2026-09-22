@@ -136,6 +136,7 @@ function bbbCopyTextToClipboard(text) {
             let data = {
                 action: 'view_join_form',
                 room_id: room_id,
+                nonce: vcbbb_php_vars.join_form_nonce,
                 post_type: 'POST',
             }
 
@@ -431,6 +432,8 @@ function joinBBBRoomFromPage(URL, fullscreen = 0, self) {
     var req_form = jQuery(self).parents('form')
     var username = req_form.find('input[name="bbb_meeting_username"]').val()
     var room_id = req_form.find('input[name="room_id"]').val()
+    var requiresAuth = req_form.attr('data-vcbbb-requires-auth') === '1'
+    var guestAuthenticated = req_form.attr('data-vcbbb-guest-authenticated') === '1'
 
     if (fullscreen) {
         var target = '_system'
@@ -438,19 +441,32 @@ function joinBBBRoomFromPage(URL, fullscreen = 0, self) {
         var target = '_self'
     }
 
+    if (requiresAuth && !guestAuthenticated) {
+        target = '_self'
+    }
+
     if (document.getElementById('joinroom' + room_id).reportValidity()) {
-        window.open(
+        var joinUrl =
             URL +
-                '&room_id=' +
-                room_id +
-                '&bbb_join_fullscreen=' +
-                fullscreen +
-                '&bbb_meeting_access_code=' +
-                req_form.find('input[name="bbb_meeting_access_code"]').val() +
-                '&bbb_meeting_username=' +
-                (username ? username : ''),
-            target
-        )
+            '&room_id=' +
+            room_id +
+            '&bbb_join_fullscreen=' +
+            fullscreen +
+            '&bbb_meeting_access_code=' +
+            encodeURIComponent(req_form.find('input[name="bbb_meeting_access_code"]').val()) +
+            '&bbb_meeting_username=' +
+            encodeURIComponent(username ? username : '')
+
+        if (guestAuthenticated) {
+            joinUrl += '&vcbbb_join_meeting=1'
+        }
+
+        var guestSession = req_form.find('input[name="vcbbb_guest_session"]').val()
+        if (guestSession) {
+            joinUrl += '&vcbbb_guest_session=' + encodeURIComponent(guestSession)
+        }
+
+        window.open(joinUrl, target)
     }
 
     return false

@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'No direct access' );
+}
+?>
 <div id="bbb-recordings-list-<?php echo esc_attr( $room_id ); ?>">
 	<?php if ( empty( $recordings ) ) { ?>
 		<p id="bbb-no-recordings-msg"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
@@ -26,30 +31,30 @@
 					</div>
 				<?php } ?>
 			</div>
-			<?php foreach ( $recordings as $recording ) { ?>
-				<div id="bbb-recording-<?php echo esc_attr( $recording->recordID ); ?>" class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo esc_attr( $columns ); ?> bbb-recording-row" role="rowgroup">
-					<div id="bbb-recording-name-<?php echo esc_attr( $recording->recordID ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
-						<?php echo esc_html( urldecode( $recording->metadata->{'recording-name'} ) ); ?>
+			<?php foreach ( $recordings as $vcbbb_recording ) { ?>
+				<div id="bbb-recording-<?php echo esc_attr( $vcbbb_recording->recordID ); ?>" class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo esc_attr( $columns ); ?> bbb-recording-row" role="rowgroup">
+					<div id="bbb-recording-name-<?php echo esc_attr( $vcbbb_recording->recordID ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
+						<?php echo esc_html( urldecode( $vcbbb_recording->metadata->{'recording-name'} ) ); ?>
 						<?php if ( $manage_bbb_recordings ) { ?>
-							<i id="edit-recording-name-<?php echo esc_attr( $recording->recordID ); ?>"
+							<i id="edit-recording-name-<?php echo esc_attr( $vcbbb_recording->recordID ); ?>"
 								title="<?php esc_html_e( 'Edit', 'video-conferencing-with-bbb' ); ?>"
 								aria-label="<?php esc_html_e( 'Edit', 'video-conferencing-with-bbb' ); ?>"
-								data-record-id="<?php echo esc_attr( $recording->recordID ); ?>"
-								data-record-value="<?php echo esc_attr( urldecode( $recording->metadata->{'recording-name'} ) ); ?>"
+								data-record-id="<?php echo esc_attr( $vcbbb_recording->recordID ); ?>"
+								data-record-value="<?php echo esc_attr( urldecode( $vcbbb_recording->metadata->{'recording-name'} ) ); ?>"
 								data-record-type="name"
 								data-meta-nonce="<?php echo esc_attr( $meta_nonce ); ?>"
 								class="dashicons dashicons-edit vcbbb-icon vcbbb_edit_recording_data"></i>
 						<?php } ?>
 					</div>
 					<?php if ( $recording_description_exist ) : ?>
-						<div id="bbb-recording-description-<?php echo esc_attr( $recording->recordID ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
-							<?php echo esc_html( urldecode( $recording->metadata->{'recording-description'} ) ); ?>
+						<div id="bbb-recording-description-<?php echo esc_attr( $vcbbb_recording->recordID ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
+							<?php echo esc_html( urldecode( $vcbbb_recording->metadata->{'recording-description'} ) ); ?>
 							<?php if ( $manage_bbb_recordings ) { ?>
-								<i id="edit-recording-description-<?php echo esc_attr( $recording->recordID ); ?>"
+								<i id="edit-recording-description-<?php echo esc_attr( $vcbbb_recording->recordID ); ?>"
 									title="<?php esc_html_e( 'Edit', 'video-conferencing-with-bbb' ); ?>"
 									aria-label="<?php esc_html_e( 'Edit', 'video-conferencing-with-bbb' ); ?>"
-									data-record-id="<?php echo esc_attr( $recording->recordID ); ?>"
-									data-record-value="<?php echo esc_attr( urldecode( $recording->metadata->{'recording-description'} ) ); ?>"
+									data-record-id="<?php echo esc_attr( $vcbbb_recording->recordID ); ?>"
+									data-record-value="<?php echo esc_attr( urldecode( $vcbbb_recording->metadata->{'recording-description'} ) ); ?>"
 									data-record-type="description"
 									data-meta-nonce="<?php echo esc_attr( $meta_nonce ); ?>"
 									class="dashicons dashicons-edit vcbbb-icon vcbbb_edit_recording_data"></i>
@@ -57,52 +62,52 @@
 						</div>
 					<?php endif; ?>
 					<div class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
-					<?php echo esc_html( date_i18n( $date_format, (int) ( $recording->startTime / 1000 ) ) ); ?>
+					<?php echo esc_html( date_i18n( $date_format, (int) ( $vcbbb_recording->startTime / 1000 ) ) ); ?>
 					</div>
 					<?php
-						$recording_url = '';
-						$formats = isset( $recording->playback->format ) ? ( is_array( $recording->playback->format ) ? $recording->playback->format : array( $recording->playback->format ) ) : array();
-						foreach ( $formats as $format ) {
-							if ( ( isset( $format->type ) && ( (string) $format->type == $default_bbb_recording_format || $view_extended_recording_formats ) ) && isset( $format->url ) ) {
-								$recording_url = trim( apply_filters( 'vcbbb_recording_url_display', (string) $format->url, isset( $format->type ) ? (string) $format->type : '' ) );
-								$recording_url = VCBBB_Api::normalize_recording_playback_url( $recording_url );
+						$vcbbb_recording_url = '';
+						$vcbbb_formats       = isset( $vcbbb_recording->playback->format ) ? ( is_array( $vcbbb_recording->playback->format ) ? $vcbbb_recording->playback->format : array( $vcbbb_recording->playback->format ) ) : array();
+						foreach ( $vcbbb_formats as $vcbbb_format ) {
+							if ( ( isset( $vcbbb_format->type ) && ( (string) $vcbbb_format->type == $default_bbb_recording_format || $view_extended_recording_formats ) ) && isset( $vcbbb_format->url ) ) {
+								$vcbbb_recording_url = trim( apply_filters( 'vcbbb_recording_url_display', (string) $vcbbb_format->url, isset( $vcbbb_format->type ) ? (string) $vcbbb_format->type : '' ) );
+								$vcbbb_recording_url = VCBBB_Api::normalize_recording_playback_url( $vcbbb_recording_url );
 								break;
 							}
 						}
 					?>
 					<div class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
-						<div id="bbb-recording-links-block-<?php echo esc_attr( $recording->recordID ); ?>" class="bbb-recording-link-block" style="<?php echo ( $recording->published == 'false' ? 'display:none;' : '' ); ?>">
-							<?php if ( ! empty( $recording_url ) ) : ?>
-								<button class="vcbbb-button vcbbb-btn-join button button-primary" onclick="window.open('<?php echo esc_url( $recording_url ); ?>', '_blank')"><?php esc_html_e( 'View Recording', 'video-conferencing-with-bbb' ); ?></button>
+						<div id="bbb-recording-links-block-<?php echo esc_attr( $vcbbb_recording->recordID ); ?>" class="bbb-recording-link-block" style="<?php echo ( $vcbbb_recording->published == 'false' ? 'display:none;' : '' ); ?>">
+							<?php if ( ! empty( $vcbbb_recording_url ) ) : ?>
+								<button class="vcbbb-button vcbbb-btn-join button button-primary" onclick="window.open('<?php echo esc_url( $vcbbb_recording_url ); ?>', '_blank')"><?php esc_html_e( 'View Recording', 'video-conferencing-with-bbb' ); ?></button>
 							<?php endif; ?>
 						</div>
 					</div>
 					<?php if ( $manage_bbb_recordings ) { ?>
 						<div class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
-							<?php if ( isset( $recording->protected_icon_classes ) && isset( $recording->protected_icon_title ) ) { ?>
-								<i data-record-id="<?php echo esc_attr( $recording->recordID ); ?>"
+							<?php if ( isset( $vcbbb_recording->protected_icon_classes ) && isset( $vcbbb_recording->protected_icon_title ) ) { ?>
+								<i data-record-id="<?php echo esc_attr( $vcbbb_recording->recordID ); ?>"
 										data-meta-nonce="<?php echo esc_attr( $meta_nonce ); ?>"
-										class="<?php echo esc_attr( $recording->protected_icon_classes ); ?>"
-										title="<?php echo esc_attr( $recording->protected_icon_title ); ?>"
-										aria-label="<?php echo esc_attr( $recording->protected_icon_title ); ?>"></i>
+										class="<?php echo esc_attr( $vcbbb_recording->protected_icon_classes ); ?>"
+										title="<?php echo esc_attr( $vcbbb_recording->protected_icon_title ); ?>"
+										aria-label="<?php echo esc_attr( $vcbbb_recording->protected_icon_title ); ?>"></i>
 								&nbsp;
 							<?php } ?>
-							<i data-record-id="<?php echo esc_attr( $recording->recordID ); ?>"
+							<i data-record-id="<?php echo esc_attr( $vcbbb_recording->recordID ); ?>"
 									data-meta-nonce="<?php echo esc_attr( $meta_nonce ); ?>"
-									class="<?php echo esc_attr( $recording->published_icon_classes ); ?>"
-									title="<?php echo esc_attr( $recording->published_icon_title ); ?>"
-									aria-label="<?php echo esc_attr( $recording->published_icon_title ); ?>"></i>
+									class="<?php echo esc_attr( $vcbbb_recording->published_icon_classes ); ?>"
+									title="<?php echo esc_attr( $vcbbb_recording->published_icon_title ); ?>"
+									aria-label="<?php echo esc_attr( $vcbbb_recording->published_icon_title ); ?>"></i>
 							&nbsp;
-							<i data-record-id="<?php echo esc_attr( $recording->recordID ); ?>"
+							<i data-record-id="<?php echo esc_attr( $vcbbb_recording->recordID ); ?>"
 								data-meta-nonce="<?php echo esc_attr( $meta_nonce ); ?>"
-								class="<?php echo esc_attr( $recording->trash_icon_classes ); ?>"
+								class="<?php echo esc_attr( $vcbbb_recording->trash_icon_classes ); ?>"
 								title="<?php echo esc_attr_x( 'Trash', 'post status', 'video-conferencing-with-bbb' ); ?>"
                                 aria-label="<?php echo esc_attr_x( 'Trash', 'post status', 'video-conferencing-with-bbb' ); ?>"></i>
 							&nbsp;
 							<span class="tooltip" onclick="copyToClipboard(this)" onmouseout="copyClipboardExit(this)"
 								data-value="<?php echo esc_url( $recording_url ); ?>">
 								<span class="tooltiptext recording-url-tooltip"><?php esc_html_e( 'Share Recording URL', 'video-conferencing-with-bbb' ); ?></span>
-								<span class="<?php echo esc_attr( $recording->share_icon_classes ); ?>"></span>
+								<span class="<?php echo esc_attr( $vcbbb_recording->share_icon_classes ); ?>"></span>
 							</span>
 						</div>
 					<?php } ?>

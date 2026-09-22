@@ -33,6 +33,14 @@ class VCBBB_Admin_Api {
 			return $post_id;
 		}
 
+		if ( ! isset( $_POST['bbb-room-moderator-code-nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bbb-room-moderator-code-nonce'] ) ), 'bbb-room-moderator-code-nonce' ) ) {
+			return $post_id;
+		}
+
+		if ( ! isset( $_POST['bbb-moderator-code'], $_POST['bbb-viewer-code'] ) ) {
+			return $post_id;
+		}
+
 		if ( $this->can_save_room() ) {
 			$moderator_code = sanitize_text_field( wp_unslash( $_POST['bbb-moderator-code'] ) );
 			$viewer_code    = sanitize_text_field( wp_unslash( $_POST['bbb-viewer-code'] ) );
@@ -77,13 +85,11 @@ class VCBBB_Admin_Api {
 	 * @since 3.0.0
 	 */
 	public function dismiss_admin_notices() {
-		if ( isset( $_POST['type'] ) && 'vcbbb-' === substr( $_POST['type'], 0, 6 ) ) {
-			$type = sanitize_text_field( wp_unslash( $_POST['type'] ) );
-			if ( isset( $_POST['nonce'] ) ) {
-				$nonce = sanitize_text_field( wp_unslash( $_POST['nonce'] ) );
-				if ( wp_verify_nonce( $nonce, $type ) ) {
-					update_option( 'dismissed-' . $type, true, false );
-				}
+		if ( isset( $_POST['type'], $_POST['nonce'] ) && 'vcbbb-' === substr( sanitize_text_field( wp_unslash( $_POST['type'] ) ), 0, 6 ) ) {
+			$type  = sanitize_text_field( wp_unslash( $_POST['type'] ) );
+			$nonce = sanitize_text_field( wp_unslash( $_POST['nonce'] ) );
+			if ( wp_verify_nonce( $nonce, $type ) ) {
+				update_option( 'dismissed-' . $type, true, false );
 			}
 		}
 	}

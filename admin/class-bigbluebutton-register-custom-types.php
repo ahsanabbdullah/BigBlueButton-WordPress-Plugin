@@ -67,7 +67,7 @@ class VCBBB_Register_Custom_Types {
 			'supports'        => array( 'title', 'editor', 'author', 'thumbnail', 'permalink' ),
 		);
 
-		if ( ! current_user_can( 'add_bbb_rooms' ) || VCBBB_Admin_Helper::check_posts() ) {
+		if ( ! current_user_can( 'add_bbb_rooms' ) ) {
 			$params['capabilities'] = array(
 				'create_posts' => 'do_not_allow',
 			);

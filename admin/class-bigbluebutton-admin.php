@@ -234,6 +234,9 @@ class VCBBB_Admin {
 			if ( isset( $icon_map[ $slug ] ) && false === strpos( (string) $item[0], 'dashicons' ) ) {
 				$item[0] = $this->get_menu_title_with_icon( $icon_map[ $slug ], wp_strip_all_tags( $item[0] ) );
 			}
+			if ( 'bbb-room-pro-version' === $slug ) {
+				$item[2] = VIDEO_CONF_WITH_BBB_PRO;
+			}
 			$items_by_slug[ $slug ] = $item;
 		}
 
@@ -431,18 +434,33 @@ class VCBBB_Admin {
 	 * @since   3.0.0
 	 */
 	public function redirect_to_pro_version() {
-		wp_register_script( 'video-conf-bbb-dummy-js-header', '', array(), $this->version, true );
-		wp_enqueue_script( 'video-conf-bbb-dummy-js-header' );
-		wp_add_inline_script(
-			'video-conf-bbb-dummy-js-header',
-			"window
-                .open(
-                    '" . esc_html( VIDEO_CONF_WITH_BBB_PRO ) . "',
-					'_self'
-                )
-                .focus();
-			"
-		);
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'video-conferencing-with-bbb' ) );
+		}
+
+		$url  = VIDEO_CONF_WITH_BBB_PRO;
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+		if ( is_string( $host ) && '' !== $host ) {
+			add_filter(
+				'allowed_redirect_hosts',
+				static function ( $hosts ) use ( $host ) {
+					if ( ! in_array( $host, $hosts, true ) ) {
+						$hosts[] = $host;
+					}
+					return $hosts;
+				}
+			);
+		}
+
+		if ( ! headers_sent() ) {
+			wp_safe_redirect( $url, 302 );
+			exit;
+		}
+
+		echo '<script>window.location.replace(' . wp_json_encode( $url ) . ');</script>';
+		echo '<noscript><meta http-equiv="refresh" content="0;url=' . esc_url( $url ) . '"></noscript>';
+		echo '<p><a href="' . esc_url( $url ) . '">' . esc_html__( 'Continue to the Pro version page.', 'video-conferencing-with-bbb' ) . '</a></p>';
+		exit;
 	}
 
 	/**

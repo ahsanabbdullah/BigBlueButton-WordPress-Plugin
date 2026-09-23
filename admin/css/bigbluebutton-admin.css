@@ -979,3 +979,165 @@ body.vcbbb-sc-modal-open {
 		column-count: 1;
 	}
 }
+
+/* Pro Version Features page — match BBB Settings Page design */
+.bbb-rooms_page_bbb-room-pro-features #wpbody-content {
+	background: #f0f0f1;
+}
+
+.vcbbb-pro-page {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	color: #3c434a;
+	max-width: 1200px;
+	width: 100%;
+	margin: 0;
+	padding: 8px 0 40px;
+	box-sizing: border-box;
+}
+
+.vcbbb-pro-page *,
+.vcbbb-pro-page *::before,
+.vcbbb-pro-page *::after {
+	box-sizing: border-box;
+}
+
+.vcbbb-pro-page a {
+	color: #2271b1;
+	text-decoration: none;
+}
+
+.vcbbb-pro-page a:hover {
+	color: #135e96;
+	text-decoration: underline;
+}
+
+.vcbbb-pro-shell {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+	padding: 24px 24px 32px;
+	min-width: 0;
+}
+
+.vcbbb-pro-back {
+	display: inline-block;
+	margin-bottom: 16px;
+	font-size: 13px;
+}
+
+.vcbbb-pro-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 18px;
+	flex-wrap: wrap;
+}
+
+.vcbbb-pro-header h1 {
+	font-size: 22px;
+	font-weight: 700;
+	margin: 0 0 6px;
+	padding: 0;
+	color: #1d2327;
+	line-height: 1.3;
+}
+
+.vcbbb-pro-header p {
+	margin: 0;
+	font-size: 13px;
+	color: #646970;
+	line-height: 1.5;
+}
+
+.vcbbb-pro-upgrade {
+	display: inline-block;
+	background: #2271b1;
+	color: #fff !important;
+	border: 1px solid #2271b1;
+	border-radius: 4px;
+	padding: 10px 18px;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	cursor: pointer;
+	flex-shrink: 0;
+	text-decoration: none !important;
+	font-family: inherit;
+	transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.vcbbb-pro-upgrade:hover,
+.vcbbb-pro-upgrade:focus {
+	background: #135e96;
+	border-color: #135e96;
+	color: #fff !important;
+	transform: translateY(-3px);
+	box-shadow: 0 4px 10px rgba(34, 113, 177, 0.28);
+}
+
+.vcbbb-pro-upgrade:active {
+	background: #135e96;
+	color: #fff !important;
+	transform: translateY(-3px);
+}
+
+.vcbbb-pro-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.vcbbb-pro-card {
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	padding: 14px;
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	background: #fff;
+	min-width: 0;
+	transition: transform 0.18s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.18s ease;
+}
+
+.vcbbb-pro-card:hover {
+	background: #eaf2fa;
+	border-color: #2271b1;
+	transform: translateY(-8px);
+	box-shadow: 0 0 0 1px #2271b1, 0 12px 28px rgba(15, 23, 42, 0.14), 0 4px 10px rgba(15, 23, 42, 0.08);
+	position: relative;
+	z-index: 1;
+}
+
+.vcbbb-pro-check {
+	font-size: 16px;
+	color: #2271b1;
+	flex-shrink: 0;
+	line-height: 1.4;
+}
+
+.vcbbb-pro-text {
+	font-size: 13px;
+	line-height: 1.5;
+	color: #3c434a;
+}
+
+@media screen and (max-width: 960px) {
+	.vcbbb-pro-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* No horizontal scrollbar on plugin admin screens */
+body.post-type-bbb-room,
+body[class*="bbb-rooms_page_"] {
+	overflow-x: hidden;
+}
+
+body.post-type-bbb-room #wpcontent,
+body.post-type-bbb-room #wpbody-content,
+body[class*="bbb-rooms_page_"] #wpcontent,
+body[class*="bbb-rooms_page_"] #wpbody-content {
+	overflow-x: hidden;
+	max-width: 100%;
+}

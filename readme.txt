@@ -188,7 +188,7 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 
 = 3.2.3 =
 * Fixed: Plugin Check issues for escaping, i18n string literals, translators comments, nonce/sanitization, and direct file access on template files.
-* Updated: Tested up to WordPress 7.1.
+
 
 = 3.2.2 =
 * Fixed: Removed the free-version 2-room create quota so any number of BBB rooms can be added, in line with WordPress.org plugin guidelines.

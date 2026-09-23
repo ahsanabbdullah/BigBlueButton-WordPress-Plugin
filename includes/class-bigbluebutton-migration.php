@@ -93,10 +93,8 @@ class VCBBB_Migration {
 		$old_room_logs_sql   = esc_sql( $old_room_logs_table );
 
 		// Import old rooms to new rooms.
-		$old_rooms_query            = $wpdb->prepare( 'SHOW TABLES LIKE %s;', $wpdb->esc_like( $old_rooms_table ) );
-		$old_room_logs_query        = $wpdb->prepare( 'SHOW TABLES LIKE %s;', $wpdb->esc_like( $old_room_logs_table ) );
-		$old_room_logs_table_exists = ( $wpdb->get_var( $old_room_logs_query ) === $old_room_logs_table ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration.
-		if ( $wpdb->get_var( $old_rooms_query ) === $old_rooms_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration.
+		$old_room_logs_table_exists = ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s;', $wpdb->esc_like( $old_room_logs_table ) ) ) === $old_room_logs_table ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration.
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s;', $wpdb->esc_like( $old_rooms_table ) ) ) === $old_rooms_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration.
 			$old_rooms = $wpdb->get_results( "SELECT * FROM `{$old_rooms_table_sql}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is prefix + esc_sql.
 			foreach ( $old_rooms as $old_room ) {
 				$new_room_args = array(

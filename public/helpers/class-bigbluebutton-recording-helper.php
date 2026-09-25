@@ -66,7 +66,7 @@ class VCBBB_Recording_Helper {
 	public function get_recordings_based_on_capability( $room_ids ) {
 		$manage_recordings = VCBBB_Permissions_Helper::user_has_bbb_cap( 'manage_bbb_room_recordings' );
 		if ( $manage_recordings ) {
-			$this->recordings = VCBBB_Api::get_recordings( $room_ids, 'published,unpublished,processed' );
+			$this->recordings = VCBBB_Api::get_recordings( $room_ids, 'published,unpublished,processed,processing' );
 			$this->maybe_auto_publish_ready_recordings();
 		} else {
 			$this->recordings = VCBBB_Api::get_recordings( $room_ids, 'published' );

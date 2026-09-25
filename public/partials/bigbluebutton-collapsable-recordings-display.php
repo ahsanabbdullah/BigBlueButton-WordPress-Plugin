@@ -53,6 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		'p'      => array(
 			'class' => true,
 			'id'    => true,
+			'style' => true,
 		),
 		'label'  => array(
 			'id'    => true,

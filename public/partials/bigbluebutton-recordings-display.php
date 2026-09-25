@@ -5,9 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div id="bbb-recordings-list-<?php echo esc_attr( $room_id ); ?>">
 	<?php if ( empty( $recordings ) ) { ?>
-		<p id="bbb-no-recordings-msg"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
+		<p id="bbb-no-recordings-msg" class="bbb-no-recordings-msg"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
 	<?php } else { ?>
-		<p id="bbb-no-recordings-msg" style="display:none;"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
+		<p id="bbb-no-recordings-msg" class="bbb-no-recordings-msg is-hidden"><?php esc_html_e( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ); ?></p>
 		<div id="bbb-recordings-table" class="bbb-table-container vcbbb-table-container" role="table">
 			<div class="bbb-flex-table vcbbb-flex-table vcbbb-flex-table-<?php echo esc_attr( $columns ); ?> bbb-header vcbbb-header" role="rowgroup">
 				<a href="<?php echo esc_url( $sort_fields['name']->url ); ?>" class="flex-row flex-row-<?php echo esc_attr( $columns ); ?> <?php echo esc_html( $sort_fields['name']->header_classes ); ?>" role="columnheader">

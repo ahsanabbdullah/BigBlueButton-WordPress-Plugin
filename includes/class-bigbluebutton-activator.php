@@ -61,33 +61,24 @@ class VCBBB_Activator {
 	/**
 	 * One-time upgrade: replace retired Blindside Networks public test credentials.
 	 *
-	 * Runs on admin_init before the stored plugin version is updated. Only sites
-	 * whose saved Endpoint URL points at test-install.blindsidenetworks.com are
-	 * changed. Custom / production BBB servers are left untouched.
+	 * Runs on admin_init. Must only rewrite Blindside test-install credentials once.
+	 * After the flag is set, intentionally saved Blindside (or any) credentials must
+	 * not be overwritten — that bug made Settings saves appear to stick while meetings
+	 * still used BiggerBlueButton.
 	 *
 	 * @since 3.2.1
 	 */
 	private static function maybe_migrate_blindsidenetworks_test_server() {
-		$stored_url = get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', '' ) );
-
-		// Source of truth is the retired Blindside test host, not the version option.
-		// Roles upgrade can bump video_conf_with_bbb_version to 3.2.1 first, which
-		// previously set the flag and skipped this replacement.
-		if ( self::is_legacy_blindsidenetworks_test_url( $stored_url ) ) {
-			update_option( 'vcbbb_url', VIDEO_CONF_WITH_BBB_ENDPOINT, false );
-			update_option( 'vcbbb_salt', VIDEO_CONF_WITH_BBB_SALT, false );
-			update_option( 'vcbbb_migrated_bn_test_server', 1, false );
-			return;
-		}
-
+		// Truly one-time. Do not re-migrate if the admin later chooses Blindside again.
 		if ( get_option( 'vcbbb_migrated_bn_test_server' ) ) {
 			return;
 		}
 
-		$db_version = get_option( 'video_conf_with_bbb_version', '0' );
-		if ( version_compare( (string) $db_version, '3.2.1', '<' ) ) {
-			update_option( 'vcbbb_migrated_bn_test_server', 1, false );
-			return;
+		$stored_url = get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', '' ) );
+
+		if ( self::is_legacy_blindsidenetworks_test_url( $stored_url ) ) {
+			update_option( 'vcbbb_url', VIDEO_CONF_WITH_BBB_ENDPOINT, false );
+			update_option( 'vcbbb_salt', VIDEO_CONF_WITH_BBB_SALT, false );
 		}
 
 		update_option( 'vcbbb_migrated_bn_test_server', 1, false );

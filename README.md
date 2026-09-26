@@ -6,7 +6,7 @@ Tags: virtual classroom, video conference, BigBlueButton, BBB, online meeting, w
 Requires at least: 5.1  
 Tested up to: 7.1 
 Requires PHP: 7.2  
-Stable tag: 3.2.9
+Stable tag: 3.2.10
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -135,6 +135,9 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 8. BBB Rooms can also be organized using Categories.
 
 ## Changelog ##
+
+### 3.2.10 ###
+* Fixed: Migration SQL uses escaped table-name concatenation (WordPress identifiers cannot use prepare placeholders).
 
 ### 3.2.9 ###
 * Fixed: Plugin Check nonce warnings on admin category filter and public join username (documented read-only GET usage; no behavior change).

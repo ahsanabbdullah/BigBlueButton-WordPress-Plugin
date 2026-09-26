@@ -694,6 +694,7 @@ class VCBBB_Admin {
 		$post_type = 'bbb-room'; // change to your post type
 		$taxonomy  = 'bbb-room-category'; // change to your taxonomy
 		if ( $typenow == $post_type ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin list-table taxonomy filter reads selected term from GET (same pattern as core); no state change here.
 			$selected      = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( $_GET[ $taxonomy ] ) ) : '';
 			$info_taxonomy = get_taxonomy( $taxonomy );
 			wp_dropdown_categories(

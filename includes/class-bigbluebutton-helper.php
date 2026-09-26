@@ -35,7 +35,8 @@ class EE_VCBBB_Helper {
 
 		if ( $user && $user->display_name ) {
 			$username = sanitize_text_field( $user->display_name );
-		} elseif ( isset( $_GET['bbb_meeting_username'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public join query string.
+		} elseif ( isset( $_GET['bbb_meeting_username'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public join passes display name via query string; value is sanitized below and does not change site state.
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See isset ignore above; sanitized public join username.
 			$username = sanitize_text_field( wp_unslash( $_GET['bbb_meeting_username'] ) );
 		}
 

@@ -148,10 +148,10 @@ $vcbbb_shortcode_blocks = array(
 				?>
 				<div class="<?php echo esc_attr( $vcbbb_card_class ); ?>" tabindex="0">
 					<?php if ( $vcbbb_card_locked ) : ?>
-						<div class="vcbbb-sc-pro-badge">
-							<span aria-hidden="true">&#128274;</span>
-							<?php esc_html_e( 'Available In Pro Version', 'video-conferencing-with-bbb' ); ?>
-						</div>
+						<span class="vcbbb-pro-tag" title="<?php echo esc_attr__( 'Available in the Pro version', 'video-conferencing-with-bbb' ); ?>">
+							<span class="dashicons dashicons-star-filled" aria-hidden="true"></span>
+							<span class="vcbbb-pro-tag-label"><?php esc_html_e( 'PRO', 'video-conferencing-with-bbb' ); ?></span>
+						</span>
 					<?php endif; ?>
 
 					<div class="vcbbb-sc-card-title">

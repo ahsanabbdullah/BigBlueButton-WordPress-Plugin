@@ -135,6 +135,7 @@ if ( ! class_exists( 'VCBBB_Uninstall' ) ) {
 			delete_option( 'bigbluebutton_default_roles_set' );
 			delete_option( 'video_conf_with_bbb_version' );
 			delete_option( 'vcbbb_migrated_bn_test_server' );
+			delete_option( 'vcbbb_migrated_legacy_default_server' );
 			delete_option( 'ee_bb_default_bbb_room' );
 			delete_option( 'bbb_flush_incorrect_caps_once' );
 		}

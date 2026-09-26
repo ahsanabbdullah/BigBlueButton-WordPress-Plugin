@@ -6,7 +6,7 @@ Tags: virtual classroom, video conference, BigBlueButton, BBB, online meeting, w
 Requires at least: 5.1  
 Tested up to: 7.1 
 Requires PHP: 7.2  
-Stable tag: 3.2.3
+Stable tag: 3.2.8
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -135,6 +135,26 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 8. BBB Rooms can also be organized using Categories.
 
 ## Changelog ##
+
+### 3.2.8 ###
+* Fixed: Shortcodes page PRO tag no longer stretches full card width.
+
+### 3.2.7 ###
+* Updated: Shared light-blue star PRO tag on All Rooms and Shortcodes (replaces “Available In Pro Version” text).
+
+### 3.2.6 ###
+* Updated: All Rooms Start Time column shows a branded PRO tag when Pro is inactive, linking to the Pro Version Features page.
+
+### 3.2.5 ###
+* Updated: All Rooms list labels — Invite URL, Moderator Code, and Viewer Code.
+* Updated: Removed the Category column from the All Rooms list table.
+
+### 3.2.4 ###
+* Updated: Default test Endpoint URL and Shared Secret now use the Blindside Networks evolve test instance.
+* Updated: Sites still using the exact retired BiggerBlueButton adeel default credentials are migrated once to the new test defaults. Custom BBB servers are not changed.
+* Updated: Settings hosting guidance now links Blindside Networks registration and bigbluebutton.host for production plans.
+* Fixed: Blindside test-server migration no longer overwrites credentials the admin intentionally saved after the first upgrade.
+* Fixed: Empty recordings message no longer appears above the recordings table when recordings exist.
 
 ### 3.2.3 ###
 * Fixed: Plugin Check issues for escaping, i18n string literals, translators comments, nonce/sanitization, and direct file access on template files.

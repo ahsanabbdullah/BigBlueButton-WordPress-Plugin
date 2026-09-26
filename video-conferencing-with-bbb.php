@@ -15,7 +15,7 @@
  * Plugin Name:       Virtual Classroom & Video Conferencing - BigBlueButton
  * Plugin URI:        https://wordpress.org/plugins/video-conferencing-with-bbb
  * Description:       This plugin allows teachers to manage their virtual classrooms right from WordPress using BigBlueButton
- * Version:           3.2.3
+ * Version:           3.2.8
  * Author:            eLearning evolve
  * Author URI:        https://elearningevolve.com/
  * License:           GPL-2.0+
@@ -23,7 +23,7 @@
  * Text Domain:       video-conferencing-with-bbb
  * Domain Path:       /languages
  */
-$video_conferencing_with_bbb_version = '3.2.3';
+$video_conferencing_with_bbb_version = '3.2.8';
 $video_conferencing_with_bbb_name    = 'Virtual Classroom & Video Conferencing - BigBlueButton';
 
 // If this file is called directly, abort.
@@ -33,8 +33,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $video_conferencing_with_bbb_constants = array(
 	'VIDEO_CONF_WITH_BBB_VERSION'     => esc_html( $video_conferencing_with_bbb_version ),
-	'VIDEO_CONF_WITH_BBB_ENDPOINT'    => 'https://biggerbluebutton.com/bigbluebutton/adeel/',
-	'VIDEO_CONF_WITH_BBB_SALT'        => 'WiPnqTo2adzr4C8XKZlWXaWp9RtIgYB1zEyTgJjgaBs',
+	'VIDEO_CONF_WITH_BBB_ENDPOINT'    => 'https://rp-evolve.api.rna1.blindsidenetworks.com/bigbluebutton/',
+	'VIDEO_CONF_WITH_BBB_SALT'        => '1db8f01d30a08703de5c35690c4266ad',
 	'VIDEO_CONF_WITH_BBB_PLUGIN_NAME' => esc_html( $video_conferencing_with_bbb_name ),
 	'VIDEO_CONF_WITH_BBB_PUBLIC_PATH' => __DIR__ . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR,
 	'VIDEO_CONF_WITH_BBB_IMG_URL'     => plugin_dir_url( __FILE__ ) . '/images',

@@ -314,15 +314,16 @@ class VCBBB_Admin {
 		}
 
 		$custom_columns = array(
-			'category'       => __( 'Category', 'video-conferencing-with-bbb' ),
-			'permalink'      => __( 'Invite Participants', 'video-conferencing-with-bbb' ),
+			'permalink'      => __( 'Invite URL', 'video-conferencing-with-bbb' ),
 			'token'          => __( 'Token', 'video-conferencing-with-bbb' ),
 			'shortcode'      => __( 'Shortcode', 'video-conferencing-with-bbb' ),
 			'start-time'     => __( 'Start Time', 'video-conferencing-with-bbb' ),
-			'moderator-code' => __( 'Moderator Access Code', 'video-conferencing-with-bbb' ),
-			'viewer-code'    => __( 'Viewer Access Code', 'video-conferencing-with-bbb' ),
+			'moderator-code' => __( 'Moderator Code', 'video-conferencing-with-bbb' ),
+			'viewer-code'    => __( 'Viewer Code', 'video-conferencing-with-bbb' ),
 			'start-meeting'  => __( 'Start Meeting', 'video-conferencing-with-bbb' ),
 		);
+
+		unset( $columns['category'], $columns['taxonomy-bbb-room-category'] );
 
 		$columns = array_merge( $columns, $custom_columns );
 
@@ -352,12 +353,6 @@ class VCBBB_Admin {
 		}
 
 		switch ( $column ) {
-			case 'category':
-				$categories = wp_get_object_terms( $post_id, 'bbb-room-category', array( 'fields' => 'names' ) );
-				if ( ! is_wp_error( $categories ) ) {
-					echo esc_attr( implode( ', ', $categories ) );
-				}
-				break;
 			case 'permalink':
     $permalink = ( get_permalink( $post_id ) ? get_permalink( $post_id ) : '' );
     echo '<span class="tooltip" onclick="copyToClipboard(this)" onmouseout="copyClipboardExit(this)"
@@ -396,7 +391,13 @@ class VCBBB_Admin {
 				break;
 			case 'start-time':
 				if ( ! VCBBB_Loader::is_bbb_pro_active() ) {
-					echo '<a href="' . esc_url( VIDEO_CONF_WITH_BBB_PRO ) . '" target="_blank" rel="noopener">Pro version feature</a>';
+					$pro_features_url = admin_url( 'admin.php?page=bbb-room-pro-features' );
+					printf(
+						'<a class="vcbbb-pro-tag" href="%1$s" title="%2$s"><span class="dashicons dashicons-star-filled" aria-hidden="true"></span><span class="vcbbb-pro-tag-label">%3$s</span></a>',
+						esc_url( $pro_features_url ),
+						esc_attr__( 'Pro Version Features', 'video-conferencing-with-bbb' ),
+						esc_html__( 'PRO', 'video-conferencing-with-bbb' )
+					);
 				} else {
 					$is_start_time = get_post_meta( $post_id, 'bbb-start-time', true );
 					if ( $is_start_time ) {

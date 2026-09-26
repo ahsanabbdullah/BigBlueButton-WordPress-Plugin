@@ -49,11 +49,13 @@ class VCBBB_Activator {
 			foreach ( $blogs as $blog ) {
 				switch_to_blog( $blog->blog_id );
 				self::maybe_migrate_blindsidenetworks_test_server();
+				self::maybe_migrate_legacy_default_bbb_server();
 				self::set_default_roles();
 				restore_current_blog();
 			}
 		} else {
 			self::maybe_migrate_blindsidenetworks_test_server();
+			self::maybe_migrate_legacy_default_bbb_server();
 			self::set_default_roles();
 		}
 	}
@@ -61,15 +63,12 @@ class VCBBB_Activator {
 	/**
 	 * One-time upgrade: replace retired Blindside Networks public test credentials.
 	 *
-	 * Runs on admin_init. Must only rewrite Blindside test-install credentials once.
-	 * After the flag is set, intentionally saved Blindside (or any) credentials must
-	 * not be overwritten — that bug made Settings saves appear to stick while meetings
-	 * still used BiggerBlueButton.
+	 * Runs on admin_init once. After the flag is set, intentionally saved credentials
+	 * are preserved.
 	 *
 	 * @since 3.2.1
 	 */
 	private static function maybe_migrate_blindsidenetworks_test_server() {
-		// Truly one-time. Do not re-migrate if the admin later chooses Blindside again.
 		if ( get_option( 'vcbbb_migrated_bn_test_server' ) ) {
 			return;
 		}
@@ -82,6 +81,30 @@ class VCBBB_Activator {
 		}
 
 		update_option( 'vcbbb_migrated_bn_test_server', 1, false );
+	}
+
+	/**
+	 * One-time upgrade: replace the retired BiggerBlueButton adeel default pair only.
+	 *
+	 * Custom / production BBB servers are left untouched. Sites that already use a
+	 * different URL or salt are not changed.
+	 *
+	 * @since 3.2.4
+	 */
+	private static function maybe_migrate_legacy_default_bbb_server() {
+		if ( get_option( 'vcbbb_migrated_legacy_default_server' ) ) {
+			return;
+		}
+
+		$stored_url  = get_option( 'vcbbb_url', get_option( 'bigbluebutton_url', '' ) );
+		$stored_salt = get_option( 'vcbbb_salt', get_option( 'bigbluebutton_salt', '' ) );
+
+		if ( self::is_legacy_adeel_default_credentials( $stored_url, $stored_salt ) ) {
+			update_option( 'vcbbb_url', VIDEO_CONF_WITH_BBB_ENDPOINT, false );
+			update_option( 'vcbbb_salt', VIDEO_CONF_WITH_BBB_SALT, false );
+		}
+
+		update_option( 'vcbbb_migrated_legacy_default_server', 1, false );
 	}
 
 	/**
@@ -103,6 +126,35 @@ class VCBBB_Activator {
 		}
 
 		return ( 'test-install.blindsidenetworks.com' === strtolower( $host ) );
+	}
+
+	/**
+	 * Whether stored credentials are exactly the retired BiggerBlueButton adeel defaults.
+	 *
+	 * @since 3.2.4
+	 *
+	 * @param string $url  Stored endpoint URL.
+	 * @param string $salt Stored shared secret.
+	 * @return bool
+	 */
+	private static function is_legacy_adeel_default_credentials( $url, $salt ) {
+		if ( empty( $url ) || ! is_string( $url ) || ! is_string( $salt ) ) {
+			return false;
+		}
+
+		$legacy_salt = 'WiPnqTo2adzr4C8XKZlWXaWp9RtIgYB1zEyTgJjgaBs';
+		if ( $salt !== $legacy_salt ) {
+			return false;
+		}
+
+		$host = wp_parse_url( trim( $url ), PHP_URL_HOST );
+		$path = wp_parse_url( trim( $url ), PHP_URL_PATH );
+		if ( ! is_string( $host ) || 'biggerbluebutton.com' !== strtolower( $host ) ) {
+			return false;
+		}
+
+		$path = is_string( $path ) ? untrailingslashit( strtolower( $path ) ) : '';
+		return ( '/bigbluebutton/adeel' === $path );
 	}
 
 	/**

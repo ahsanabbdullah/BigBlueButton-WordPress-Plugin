@@ -88,7 +88,8 @@ class VCBBB_Tokens_Helper {
 				'room_name' => get_the_title( $room_id ),
 			);
 
-			if ( isset( $_REQUEST['room_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Selected room from join form.
+			if ( isset( $_REQUEST['room_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Selected room from join form (read-only request flag).
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See isset ignore above; sanitized room selector, no site state change here.
 				$vcbbb_request_room_id = sanitize_text_field( wp_unslash( $_REQUEST['room_id'] ) );
 				if ( $vcbbb_request_room_id == $room_id || base64_decode( $vcbbb_request_room_id ) == $room_id ) {
 					$selected_room_id = $room_id;
@@ -261,10 +262,11 @@ class VCBBB_Tokens_Helper {
 	 * @return string
 	 */
 	public static function get_guest_session_token_from_request() {
-		if ( empty( $_REQUEST['vcbbb_guest_session'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Guest session token from redirect.
+		if ( empty( $_REQUEST['vcbbb_guest_session'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Guest session token from redirect (read-only).
 			return '';
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See empty() ignore above; sanitized guest session token from request.
 		return sanitize_text_field( wp_unslash( $_REQUEST['vcbbb_guest_session'] ) );
 	}
 

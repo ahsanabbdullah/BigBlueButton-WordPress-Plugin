@@ -463,16 +463,13 @@ class VCBBB_Tokens_Helper {
 			'post_type'      => 'bbb-room',
 			'fields'         => 'ids',
 			'no_found_rows'  => true,
-			'posts_per_page' => -1,
-			'meta_query'     => array(
-				array(
-					'key'   => 'bbb-room-token',
-					'value' => $token,
-				),
-			),
+			'posts_per_page' => 1,
+			// Exact token→room lookup for shortcode resolution; single meta equality cannot use a non-meta query.
+			'meta_key'       => 'bbb-room-token', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required exact meta lookup by room token.
+			'meta_value'     => $token, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Paired with meta_key for exact token match.
 		);
 
-		$query = new WP_Query( $args ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Token lookup by room meta.
+		$query = new WP_Query( $args );
 		if ( ! empty( $query->posts ) ) {
 			foreach ( $query->posts as $key => $room_id ) {
 				$room = get_post( $room_id );

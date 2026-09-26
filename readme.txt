@@ -4,7 +4,7 @@ Donate link: https://link.elearningevolve.com/self-pay
 Tags: virtual-classroom, elearning, online-teaching, bigbluebutton, live-class
 Requires at least: 5.1
 Tested up to: 7.1
-Stable tag: 3.2.13
+Stable tag: 3.2.14
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -185,6 +185,9 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 10. [Virtual Classroom for WordPress (Pro)](https://elearningevolve.com/products/wp-virtual-classroom/)
 
 == Changelog ==
+
+= 3.2.14 =
+* Fixed: Frontend CSS/JS load only on BBB room pages, shortcode pages, or when the BBB widget is active (Plugin Check EnqueuedStylesScope).
 
 = 3.2.13 =
 * Fixed: Token room lookup uses a single meta_key/meta_value query instead of meta_query (Plugin Check SlowDBQuery).

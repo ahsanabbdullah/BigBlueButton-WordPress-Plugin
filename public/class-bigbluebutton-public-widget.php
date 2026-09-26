@@ -49,6 +49,8 @@ class VCBBB_Public_Widget extends WP_Widget {
 		$author         = isset( $instance['author'] ) ? $instance['author'] : 0;
 		$display_helper = new VCBBB_Display_Helper( plugin_dir_path( __FILE__ ) );
 
+		VCBBB_Public::enqueue_frontend_assets();
+
 		echo $args['before_widget'] . $args['before_title'] . esc_html( $args['widget_name'] ) . $args['after_title']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core widget wrappers are HTML.
 
 		echo VCBBB_Tokens_Helper::join_form_from_tokens_string( $display_helper, $tokens_string, $author ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Join form markup.

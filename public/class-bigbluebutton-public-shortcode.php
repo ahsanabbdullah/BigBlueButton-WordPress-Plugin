@@ -48,6 +48,8 @@ class VCBBB_Public_Shortcode {
 		$author         = (int) get_the_author_meta( 'ID' );
 		$display_helper = new VCBBB_Display_Helper( plugin_dir_path( __FILE__ ) );
 
+		VCBBB_Public::enqueue_frontend_assets();
+
 		$room_limit_cpt = intval( get_post_meta( $post_id, 'bbb-room-limit', true ) );
 		if ( $room_limit_cpt ) {
 			update_post_meta( $post_id, 'bbb_pro_room_limit', sanitize_text_field( $room_limit_cpt ) );

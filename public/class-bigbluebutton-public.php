@@ -59,21 +59,17 @@ class VCBBB_Public {
 	 * @since    3.0.0
 	 */
 	public function enqueue_styles() {
+		wp_register_style(
+			$this->plugin_name,
+			plugin_dir_url( __FILE__ ) . 'css/bigbluebutton-public.css',
+			array(),
+			$this->version,
+			'all'
+		);
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in VCBBB_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The VCBBB_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/bigbluebutton-public.css', array(), $this->version, 'all' );
-
+		if ( self::should_load_frontend_assets() ) {
+			wp_enqueue_style( $this->plugin_name );
+		}
 	}
 
 	/**
@@ -82,19 +78,6 @@ class VCBBB_Public {
 	 * @since    3.0.0
 	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in VCBBB_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The VCBBB_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		$translations = array(
 			'expand_recordings'   => __( 'Expand recordings', 'video-conferencing-with-bbb' ),
 			'collapse_recordings' => __( 'Collapse recordings', 'video-conferencing-with-bbb' ),
@@ -107,8 +90,18 @@ class VCBBB_Public {
 			'join_form_nonce'     => wp_create_nonce( 'vcbbb_view_join_form' ),
 		);
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/bigbluebutton-public.js', array( 'jquery', 'wp-i18n' ), $this->version, true );
+		wp_register_script(
+			$this->plugin_name,
+			plugin_dir_url( __FILE__ ) . 'js/bigbluebutton-public.js',
+			array( 'jquery', 'wp-i18n' ),
+			$this->version,
+			true
+		);
 		wp_localize_script( $this->plugin_name, 'vcbbb_php_vars', $translations );
+
+		if ( self::should_load_frontend_assets() ) {
+			wp_enqueue_script( $this->plugin_name );
+		}
 	}
 
 	/**
@@ -117,6 +110,66 @@ class VCBBB_Public {
 	 * @since   3.0.0
 	 */
 	public function enqueue_front_end_dashicons() {
+		if ( ! self::should_load_frontend_assets() ) {
+			return;
+		}
+
+		if ( ! wp_style_is( 'dashicons', 'enqueued' ) ) {
+			wp_enqueue_style( 'dashicons' );
+		}
+	}
+
+	/**
+	 * Whether frontend BBB CSS/JS should load on the current request.
+	 *
+	 * @since 3.2.14
+	 *
+	 * @return bool
+	 */
+	public static function should_load_frontend_assets() {
+		if ( is_singular( 'bbb-room' ) ) {
+			return true;
+		}
+
+		if ( get_query_var( 'vcbbb_wait_for_mod' ) ) {
+			return true;
+		}
+
+		if ( is_active_widget( false, false, 'bigbluebuttonwidget', true ) ) {
+			return true;
+		}
+
+		if ( ! is_singular() ) {
+			return false;
+		}
+
+		$post = get_post();
+		if ( ! $post instanceof WP_Post ) {
+			return false;
+		}
+
+		$shortcodes = array( 'bigbluebutton', 'bigbluebutton_recordings', 'video-conferencing-with-bbb' );
+		foreach ( $shortcodes as $shortcode ) {
+			if ( has_shortcode( $post->post_content, $shortcode ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Enqueue frontend assets when a shortcode or widget renders BBB UI.
+	 *
+	 * Safe to call after wp_enqueue_scripts; ensures styles/scripts load even when
+	 * content comes from builders that store shortcodes outside post_content.
+	 *
+	 * @since 3.2.14
+	 */
+	public static function enqueue_frontend_assets() {
+		wp_enqueue_style( 'vcbbb' );
+		wp_enqueue_script( 'vcbbb' );
+
 		if ( ! wp_style_is( 'dashicons', 'enqueued' ) ) {
 			wp_enqueue_style( 'dashicons' );
 		}

@@ -67,11 +67,11 @@ class VCBBB_Register_Custom_Types {
 			'supports'        => array( 'title', 'editor', 'author', 'thumbnail', 'permalink' ),
 		);
 
-		if ( ! current_user_can( 'add_bbb_rooms' ) ) {
-			$params['capabilities'] = array(
-				'create_posts' => 'do_not_allow',
-			);
-		}
+		// Gate CPT creation on add_bbb_rooms (not do_not_allow). Pro frontend
+		// may elevate this temporarily for allowlisted LMS/moderator roles.
+		$params['capabilities'] = array(
+			'create_posts' => 'add_bbb_rooms',
+		);
 
 		register_post_type(
 			'bbb-room',

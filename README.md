@@ -4,7 +4,7 @@ Contributors: blindsidenetworks, jfederico, yfngdu, elearningevolve, adeelraza_7
 Donate link: https://link.elearningevolve.com/self-pay 
 Tags: virtual classroom, video conference, BigBlueButton, BBB, online meeting, web conferencing, online teaching, learning management system, LMS, online session, live training, video conferencing, video conference, meetings, virtual meetings
 Requires at least: 5.1  
-Tested up to: 7.1 
+Tested up to: 7.1.2
 Requires PHP: 7.2  
 Stable tag: 3.2.14
 License: GPLv2 or later  

@@ -89,9 +89,9 @@ $vcbbb_show_tabs = ( VCBBB_Loader::is_bbb_pro_active() || null !== $tab );
 							$vcbbb_how_to .= sprintf(
 								/* translators: 1: opening Blindside link, 2: closing Blindside link, 3: opening bigbluebutton.host link, 4: closing bigbluebutton.host link */
 								esc_html__( 'For live classes, create your own account and choose a plan from %1$sBlindside Networks%2$s or %3$sbigbluebutton.host%4$s.', 'video-conferencing-with-bbb' ),
-								'<a rel="noopener" href="https://registration-portal.blindsidenetworks.com/" target="_blank">',
+								'<a rel="noopener" href="https://registration-portal.blindsidenetworks.com/sign-in" target="_blank">',
 								'</a>',
-								'<a rel="noopener" href="https://bigbluebutton.host/" target="_blank">',
+								'<a rel="noopener" href="https://bigbluebutton.host/plans/#economyplans" target="_blank">',
 								'</a>'
 							);
 							$vcbbb_how_to .= '</span></div>';

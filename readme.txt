@@ -3,7 +3,7 @@ Contributors: blindsidenetworks, jfederico, yfngdu, elearningevolve, adeelraza_7
 Donate link: https://link.elearningevolve.com/self-pay
 Tags: virtual-classroom, elearning, online-teaching, bigbluebutton, live-class
 Requires at least: 5.1
-Tested up to: 7.1
+Tested up to: 7.1.2
 Stable tag: 3.2.15
 Requires PHP: 7.2
 License: GPLv2 or later

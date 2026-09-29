@@ -6,7 +6,7 @@ Tags: virtual classroom, video conference, BigBlueButton, BBB, online meeting, w
 Requires at least: 5.1  
 Tested up to: 7.1.2
 Requires PHP: 7.2  
-Stable tag: 3.2.14
+Stable tag: 3.2.15
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -135,6 +135,9 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 8. BBB Rooms can also be organized using Categories.
 
 ## Changelog ##
+
+### 3.2.15 ###
+* Fixed: BBB room CPT create_posts capability maps to add_bbb_rooms (fixes frontend/moderator room create when create was blocked as do_not_allow).
 
 ### 3.2.14 ###
 * Fixed: Frontend CSS/JS load only on BBB room pages, shortcode pages, or when the BBB widget is active (Plugin Check EnqueuedStylesScope).

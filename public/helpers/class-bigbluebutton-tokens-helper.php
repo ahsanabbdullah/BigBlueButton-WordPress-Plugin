@@ -166,6 +166,169 @@ class VCBBB_Tokens_Helper {
 	}
 
 	/**
+	 * Get rooms or recordings for a course portal lesson (FluentCommunity) as an HTML string.
+	 *
+	 * Portal lessons are fetched over REST and injected by a JS app, so the join form, its scripts and
+	 * the post author are not available there. Rooms are shown as a link to the room page, which runs
+	 * the full join flow. Recordings use a self-contained list (inline styles) because plugin CSS/JS
+	 * are not loaded in the portal response.
+	 *
+	 * @since 3.2.16
+	 *
+	 * @param   VCBBB_Display_Helper $display_helper     Display helper (kept for callers; unused for portal recordings).
+	 * @param   String               $token_string       A list of tokens as a string, separated by commas.
+	 * @param   String               $type               Either 'room' or 'recording'.
+	 *
+	 * @return  String               $content            HTML string for the portal lesson.
+	 */
+	public static function portal_view_from_tokens_string( $display_helper, $token_string, $type ) {
+		$room_ids = array();
+
+		foreach ( preg_split( '/\,/', $token_string ) as $raw_token ) {
+			$token = preg_replace( '/[^a-zA-Z0-9]+/', '', $raw_token );
+			if ( '' == $token ) {
+				continue;
+			}
+			$room_id = ( 'z' == substr( $token, 0, 1 ) )
+				? self::check_if_room_exists_for_new_token_format( $token, 0 )
+				: self::check_if_room_exists_for_old_token_format( $token, 0 );
+			if ( 0 == $room_id ) {
+				$error = self::$error_message ? self::$error_message : esc_html__( 'The room linked to this resource is not configured correctly.', 'video-conferencing-with-bbb' );
+				return '<p>' . $error . '</p>';
+			}
+			$room_ids[] = $room_id;
+		}
+
+		if ( empty( $room_ids ) ) {
+			return '<p>' . esc_html__( 'There are no rooms in the selection.', 'video-conferencing-with-bbb' ) . '</p>';
+		}
+
+		if ( 'recording' == $type ) {
+			$manage_recordings               = VCBBB_Permissions_Helper::user_has_bbb_cap( 'manage_bbb_room_recordings' );
+			$view_extended_recording_formats = VCBBB_Permissions_Helper::user_has_bbb_cap( 'view_extended_bbb_room_recording_formats' );
+
+			if ( ! $manage_recordings ) {
+				$room_ids = array_values( array_filter( $room_ids, array( __CLASS__, 'current_user_can_view_room_recordings' ) ) );
+			}
+
+			if ( empty( $room_ids ) ) {
+				return '<p>' . esc_html__( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ) . '</p>';
+			}
+
+			$recordings = self::get_recordings( $room_ids );
+			return self::portal_recordings_list_html( $recordings, $view_extended_recording_formats );
+		}
+
+		$content = '';
+		foreach ( $room_ids as $room_id ) {
+			// Inline styles keep the button usable in course portals that inject HTML without this plugin's CSS.
+			$link = sprintf(
+				'<p class="bbb-portal-room"><a class="bbb-button bbb-btn-join" href="%1$s" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:10px 20px;border-radius:4px;background:#0073aa;color:#fff;text-decoration:none;">%2$s</a></p>',
+				esc_url( get_permalink( $room_id ) ),
+				esc_html(
+					sprintf(
+						/* translators: %s: room name */
+						__( 'Join %s', 'video-conferencing-with-bbb' ),
+						get_the_title( $room_id )
+					)
+				)
+			);
+			$content .= apply_filters( 'vcbbb_portal_room_link_html', $link, $room_id );
+		}
+		return $content;
+	}
+
+	/**
+	 * Build a self-contained recordings list for course portals (no plugin CSS/JS required).
+	 *
+	 * @since 3.2.16
+	 *
+	 * @param array $recordings                       Recording objects from the BBB API helper.
+	 * @param bool  $view_extended_recording_formats Whether extended playback formats may be used.
+	 * @return string HTML list for the portal lesson.
+	 */
+	private static function portal_recordings_list_html( $recordings, $view_extended_recording_formats ) {
+		if ( empty( $recordings ) || ! is_array( $recordings ) ) {
+			return '<p class="bbb-portal-no-recordings">' . esc_html__( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ) . '</p>';
+		}
+
+		$date_format                  = get_option( 'date_format' ) ? get_option( 'date_format' ) : 'Y-m-d';
+		$default_bbb_recording_format = 'presentation';
+		$rows                         = '';
+
+		foreach ( $recordings as $recording ) {
+			if ( ! is_object( $recording ) ) {
+				continue;
+			}
+
+			// Match room-page behaviour: unpublished playback links stay hidden for viewers.
+			if ( isset( $recording->published ) && 'false' === (string) $recording->published ) {
+				continue;
+			}
+
+			$name = '';
+			if ( isset( $recording->metadata->{'recording-name'} ) ) {
+				$name = urldecode( (string) $recording->metadata->{'recording-name'} );
+			}
+			if ( '' === $name && isset( $recording->name ) ) {
+				$name = urldecode( (string) $recording->name );
+			}
+			if ( '' === $name ) {
+				$name = __( 'Recording', 'video-conferencing-with-bbb' );
+			}
+
+			$date = '';
+			if ( isset( $recording->startTime ) ) {
+				$date = date_i18n( $date_format, (int) ( $recording->startTime / 1000 ) );
+			}
+
+			$recording_url = '';
+			$formats       = array();
+			if ( isset( $recording->playback->format ) ) {
+				$formats = is_array( $recording->playback->format ) ? $recording->playback->format : array( $recording->playback->format );
+			}
+			foreach ( $formats as $format ) {
+				if ( ! isset( $format->type, $format->url ) ) {
+					continue;
+				}
+				if ( (string) $format->type === $default_bbb_recording_format || $view_extended_recording_formats ) {
+					$recording_url = trim( apply_filters( 'vcbbb_recording_url_display', (string) $format->url, (string) $format->type ) );
+					$recording_url = VCBBB_Api::normalize_recording_playback_url( $recording_url );
+					break;
+				}
+			}
+
+			if ( '' === $recording_url ) {
+				continue;
+			}
+
+			$row = sprintf(
+				'<div class="bbb-portal-recording" style="border:1px solid #dcdcde;border-radius:6px;padding:14px 16px;margin:0 0 12px;background:#fff;">'
+				. '<div class="bbb-portal-recording-name" style="font-weight:600;margin:0 0 4px;color:#1d2327;">%1$s</div>'
+				. '<div class="bbb-portal-recording-date" style="font-size:13px;color:#646970;margin:0 0 12px;">%2$s</div>'
+				. '<a class="bbb-button bbb-btn-join" href="%3$s" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:8px 16px;border-radius:4px;background:#0073aa;color:#fff;text-decoration:none;">%4$s</a>'
+				. '</div>',
+				esc_html( $name ),
+				esc_html( $date ),
+				esc_url( $recording_url ),
+				esc_html__( 'View Recording', 'video-conferencing-with-bbb' )
+			);
+			$rows .= apply_filters( 'vcbbb_portal_recording_row_html', $row, $recording );
+		}
+
+		if ( '' === $rows ) {
+			return '<p class="bbb-portal-no-recordings">' . esc_html__( 'This room does not currently have any recordings.', 'video-conferencing-with-bbb' ) . '</p>';
+		}
+
+		$list = '<div class="bbb-portal-recordings" style="margin:12px 0;">'
+			. '<p class="bbb-portal-recordings-heading" style="font-weight:600;margin:0 0 12px;color:#1d2327;">' . esc_html__( 'Recordings', 'video-conferencing-with-bbb' ) . '</p>'
+			. $rows
+			. '</div>';
+
+		return apply_filters( 'vcbbb_portal_recordings_list_html', $list, $recordings );
+	}
+
+	/**
 	 * Create a short-lived guest session after access-code authentication.
 	 *
 	 * @param int    $room_id    Room post ID.

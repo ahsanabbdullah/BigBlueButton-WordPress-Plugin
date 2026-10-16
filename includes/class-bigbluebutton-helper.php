@@ -22,6 +22,39 @@ class EE_VCBBB_Helper {
 
 		return false;
 	}
+
+	/**
+	 * Check if this is a REST request from an app-style course portal (FluentCommunity
+	 * lessons) that renders lesson content through the_content.
+	 *
+	 * @since 3.2.16
+	 * @return bool
+	 */
+	public static function is_course_portal_rest_request() {
+		if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) {
+			return false;
+		}
+
+		/*
+		 * During REST, core stores the path on $wp->query_vars['rest_route']
+		 * (see rest_api_loaded()) before WP_Query is fully populated — so read
+		 * $wp first. get_query_var() is a secondary source when available.
+		 * Using global $wp avoids $GLOBALS (WP coding standards / Plugin Check).
+		 */
+		global $wp;
+		$route = '';
+		if ( isset( $wp->query_vars['rest_route'] ) && is_string( $wp->query_vars['rest_route'] ) ) {
+			$route = $wp->query_vars['rest_route'];
+		} elseif ( function_exists( 'get_query_var' ) ) {
+			$route = (string) get_query_var( 'rest_route', '' );
+		}
+		$route = '/' . ltrim( $route, '/' );
+
+		$is_portal = ( 0 === strpos( $route, '/fluent-community/' ) && false !== strpos( $route, '/courses' ) );
+
+		return (bool) apply_filters( 'vcbbb_is_course_portal_rest_request', $is_portal, $route );
+	}
+
 	/**
 	 * Get user's name for the meeting.
 	 *

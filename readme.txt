@@ -4,7 +4,7 @@ Donate link: https://link.elearningevolve.com/self-pay
 Tags: virtual-classroom, elearning, online-teaching, bigbluebutton, live-class
 Requires at least: 5.1
 Tested up to: 7.1.2
-Stable tag: 3.2.15
+Stable tag: 3.2.18
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -185,6 +185,13 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 10. [Virtual Classroom for WordPress (Pro)](https://elearningevolve.com/products/wp-virtual-classroom/)
 
 == Changelog ==
+
+= 3.2.18 =
+* Fixed: Course portal REST route detection uses global $wp (and get_query_var as fallback) instead of $GLOBALS['wp'], matching WordPress coding standards / Plugin Check. Fluent Community shortcode behavior is unchanged.
+
+= 3.2.17 =
+* Fixed: BigBlueButton shortcodes now work in Fluent Community course lessons (portal REST renders a room join link instead of being blocked).
+* Fixed: Recordings shortcodes in Fluent Community lessons use a self-contained list so layout no longer depends on plugin CSS that is not loaded there.
 
 = 3.2.15 =
 * Fixed: BBB room CPT create_posts capability maps to add_bbb_rooms (fixes frontend/moderator room create when create was blocked as do_not_allow).

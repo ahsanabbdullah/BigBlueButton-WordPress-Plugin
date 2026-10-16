@@ -90,6 +90,22 @@ $vcbbb_shortcode_blocks = array(
 	),
 	array(
 		'num'    => 6,
+		'title'  => __( 'One room with duration', 'video-conferencing-with-bbb' ),
+		'is_pro' => true,
+		'rows'   => array(
+			array(
+				'code'   => "[bigbluebutton token='z2xxx' duration='60']",
+				'is_pro' => true,
+			),
+		),
+		'notes'  => array(
+			__( 'Shows Join/Start for one room and ends the meeting after the minutes you set. Use the token from BBB Rooms → All Rooms → Token.', 'video-conferencing-with-bbb' ),
+			__( 'Optional: duration = meeting length in minutes. 60 = 60 minutes. This Pro attribute ends the meeting when that time is up. Time starts when the meeting is created.', 'video-conferencing-with-bbb' ),
+			__( 'Paste this instead of the plain Join shortcode, or the room appears twice.', 'video-conferencing-with-bbb' ),
+		),
+	),
+	array(
+		'num'    => 7,
 		'title'  => __( 'Recordings from several rooms', 'video-conferencing-with-bbb' ),
 		'is_pro' => false,
 		'rows'   => array(
@@ -103,7 +119,7 @@ $vcbbb_shortcode_blocks = array(
 		),
 	),
 	array(
-		'num'    => 7,
+		'num'    => 8,
 		'title'  => __( 'Recordings from one room', 'video-conferencing-with-bbb' ),
 		'is_pro' => false,
 		'rows'   => array(

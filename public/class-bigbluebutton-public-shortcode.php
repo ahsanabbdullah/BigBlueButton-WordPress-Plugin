@@ -59,13 +59,21 @@ class VCBBB_Public_Shortcode {
 			update_post_meta( $post_id, 'bbb_pro_room_limit', sanitize_text_field( $atts['room_limit'] ) );
 		}
 
-		if ( ! VCBBB_Tokens_Helper::can_display_room_on_page() ) {
-			return $content;
-		}
+		$atts = (array) $atts;
 
 		if ( array_key_exists( 'type', $atts ) && 'recording' == $atts['type'] ) {
 			$type = 'recording';
 			unset( $atts['type'] );
+		}
+
+		// Course portals (FluentCommunity) load lessons over REST, where the regular join form can't work.
+		if ( EE_VCBBB_Helper::is_course_portal_rest_request() ) {
+			$tokens_string = VCBBB_Tokens_Helper::get_token_string_from_atts( $atts );
+			return $content . VCBBB_Tokens_Helper::portal_view_from_tokens_string( $display_helper, $tokens_string, $type );
+		}
+
+		if ( ! VCBBB_Tokens_Helper::can_display_room_on_page() ) {
+			return $content;
 		}
 
 		$tokens_string = VCBBB_Tokens_Helper::get_token_string_from_atts( $atts );

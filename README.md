@@ -147,6 +147,9 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 * Fixed: BigBlueButton shortcodes now work in Fluent Community course lessons (portal REST renders a room join link instead of being blocked).
 * Fixed: Recordings shortcodes in Fluent Community lessons use a self-contained list so layout no longer depends on plugin CSS that is not loaded there.
 
+### 3.2.16 ###
+* Fixed: BigBlueButton shortcodes now work in Fluent Community course lessons (portal REST renders a room join link / recordings instead of being blocked).
+
 ### 3.2.15 ###
 * Fixed: BBB room CPT create_posts capability maps to add_bbb_rooms (fixes frontend/moderator room create when create was blocked as do_not_allow).
 

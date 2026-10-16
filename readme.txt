@@ -190,9 +190,6 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 * Added: Shortcodes page shows the Pro one-room duration shortcode. It uses the PRO tag and cannot be copied while the free plugin is active.
 * Added: Pro Version Features page lists meeting duration in minutes, so a room can end automatically when that time is up.
 
-= 3.2.18 =
-* Fixed: Course portal REST route detection uses global $wp (and get_query_var as fallback) instead of $GLOBALS['wp'], matching WordPress coding standards / Plugin Check. Fluent Community shortcode behavior is unchanged.
-
 = 3.2.17 =
 * Fixed: BigBlueButton shortcodes now work in Fluent Community course lessons (portal REST renders a room join link instead of being blocked).
 * Fixed: Recordings shortcodes in Fluent Community lessons use a self-contained list so layout no longer depends on plugin CSS that is not loaded there.

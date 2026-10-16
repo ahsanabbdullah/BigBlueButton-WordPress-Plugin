@@ -4,7 +4,7 @@ Donate link: https://link.elearningevolve.com/self-pay
 Tags: virtual-classroom, elearning, online-teaching, bigbluebutton, live-class
 Requires at least: 5.1
 Tested up to: 7.1.2
-Stable tag: 3.2.18
+Stable tag: 3.2.19
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -185,6 +185,10 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 10. [Virtual Classroom for WordPress (Pro)](https://elearningevolve.com/products/wp-virtual-classroom/)
 
 == Changelog ==
+
+= 3.2.19 =
+* Added: Shortcodes page shows the Pro one-room duration shortcode. It uses the PRO tag and cannot be copied while the free plugin is active.
+* Added: Pro Version Features page lists meeting duration in minutes, so a room can end automatically when that time is up.
 
 = 3.2.18 =
 * Fixed: Course portal REST route detection uses global $wp (and get_query_var as fallback) instead of $GLOBALS['wp'], matching WordPress coding standards / Plugin Check. Fluent Community shortcode behavior is unchanged.

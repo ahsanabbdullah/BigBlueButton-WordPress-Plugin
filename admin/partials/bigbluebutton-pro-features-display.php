@@ -8,6 +8,7 @@ $vcbbb_pro_features = array(
 	__( 'Set a Countdown/Schedule for Room', 'video-conferencing-with-bbb' ),
 	__( 'Fully White-label Virtual Classroom', 'video-conferencing-with-bbb' ),
 	__( 'Limit the max allowed participants for a room e.g (5, 10, .. etc) both on a per room and per page basis. This can allow you to conduct a 1:1 or group session', 'video-conferencing-with-bbb' ),
+	__( 'Set a meeting duration in minutes e.g (30, 60, .. etc) so the room ends automatically when that time is up. Time starts when the meeting is created', 'video-conferencing-with-bbb' ),
 	__( 'Upload your brand logo that is visible in the BBB room', 'video-conferencing-with-bbb' ),
 	__( 'Customize the room background-color as per your brand color', 'video-conferencing-with-bbb' ),
 	__( 'Change welcome message that is displayed in the Public Chat section of the room', 'video-conferencing-with-bbb' ),

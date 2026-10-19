@@ -29,7 +29,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<input type="hidden" name="current_page" value="<?php echo esc_url( $args['current_page'] ); ?>">
 	<input type="hidden" name="post_id" value="<?php echo esc_attr( $args['post_id'] ); ?>">
 
-	<?php if ( ! empty( $guest_authenticated ) && ! empty( $guest_room_auth ) ) : ?>
+	<?php
+	$vcbbb_guest_ready = ! empty( $guest_authenticated ) && ! empty( $guest_room_auth );
+	$vcbbb_guest_named = $vcbbb_guest_ready && '' !== trim( (string) $guest_room_auth['username'] );
+	?>
+	<?php if ( $vcbbb_guest_named ) : ?>
 		<input type="hidden" name="bbb_meeting_username" value="<?php echo esc_attr( $guest_room_auth['username'] ); ?>" />
 		<input type="hidden" name="bbb_meeting_access_code" value="<?php echo esc_attr( $guest_room_auth['entry_code'] ); ?>" />
 		<input type="hidden" name="vcbbb_guest_session" value="<?php echo esc_attr( $guest_room_auth['token'] ); ?>" />
@@ -41,14 +45,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 		<?php endif; ?>
 
-		<?php if ( ! $access_as_moderator && ! $access_as_viewer && $access_using_code ) : ?>
-			<div id="bbb_join_with_password" class="bbb-join-form-block">
+		<?php if ( $vcbbb_guest_ready ) : ?>
+			<input type="hidden" name="bbb_meeting_access_code" value="<?php echo esc_attr( $guest_room_auth['entry_code'] ); ?>" />
+			<input type="hidden" name="vcbbb_guest_session" value="<?php echo esc_attr( $guest_room_auth['token'] ); ?>" />
 		<?php else : ?>
-			<div id="bbb_join_with_password" class="bbb-join-form-block" style="display:none;">
+			<?php if ( ! $access_as_moderator && ! $access_as_viewer && $access_using_code ) : ?>
+				<div id="bbb_join_with_password" class="bbb-join-form-block">
+			<?php else : ?>
+				<div id="bbb_join_with_password" class="bbb-join-form-block" style="display:none;">
+			<?php endif; ?>
+					<label id="bbb_meeting_access_code_label" class="bbb-join-room-label"><?php esc_html_e( 'Access Code', 'video-conferencing-with-bbb' ); ?></label>
+					<input type="text" data-id="bbb_meeting_access_code" name="bbb_meeting_access_code" aria-labelledby="bbb_meeting_access_code_label" class="bbb-join-room-input vcbbb-field-invalid" placeholder="<?php esc_attr_e( 'Enter a room access code', 'video-conferencing-with-bbb' ); ?>" <?php echo ( ! $access_as_moderator && ! $access_as_viewer && $access_using_code ) ? 'required' : ''; ?>>
+			</div>
 		<?php endif; ?>
-				<label id="bbb_meeting_access_code_label" class="bbb-join-room-label"><?php esc_html_e( 'Access Code', 'video-conferencing-with-bbb' ); ?></label>
-				<input type="text" data-id="bbb_meeting_access_code" name="bbb_meeting_access_code" aria-labelledby="bbb_meeting_access_code_label" class="bbb-join-room-input" <?php echo ( ! $access_as_moderator && ! $access_as_viewer && $access_using_code ) ? 'required' : ''; ?>>
-		</div>
 	<?php endif; ?>
 
 	<?php if ( isset( $_REQUEST['max_user_error'] ) && ( sanitize_text_field( wp_unslash( $_REQUEST['room_id'] ?? '' ) ) == $room_id ) ) : ?>
@@ -95,6 +104,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php endif; ?>
 
 	<?php  do_action( 'vcbbb_join_form_buttons', $access_as_moderator, $args ); ?>
+
+	<?php if ( ! empty( $requires_access_code_auth ) && empty( $guest_authenticated ) ) : ?>
+		<a rel="noopener" href="#" onclick="return vcbbbGuestViewRecordings('<?php echo esc_url( $url ); ?>', this)">
+			<button type="button" class="bbb-button bbb-btn-join button button-primary"><?php esc_html_e( 'View Recording', 'video-conferencing-with-bbb' ); ?></button>
+		</a>
+	<?php endif; ?>
 </form>
 
 <?php endif; ?>

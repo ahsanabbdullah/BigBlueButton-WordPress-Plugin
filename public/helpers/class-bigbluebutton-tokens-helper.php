@@ -336,12 +336,12 @@ class VCBBB_Tokens_Helper {
 	 * @param string $entry_code Validated room access code.
 	 * @return string Session token for the current visit.
 	 */
-	public static function create_guest_room_session( $room_id, $username, $entry_code ) {
+	public static function create_guest_room_session( $room_id, $username, $entry_code, $allow_empty_username = false ) {
 		$room_id = absint( $room_id );
 		$username = sanitize_text_field( $username );
 		$entry_code = sanitize_text_field( $entry_code );
 
-		if ( ! $room_id || '' === $username || '' === $entry_code ) {
+		if ( ! $room_id || '' === $entry_code || ( ! $allow_empty_username && '' === $username ) ) {
 			return '';
 		}
 

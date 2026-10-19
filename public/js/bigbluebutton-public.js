@@ -445,6 +445,8 @@ function joinBBBRoomFromPage(URL, fullscreen = 0, self) {
         target = '_self'
     }
 
+    vcbbbFlagEmptyGuestName(req_form)
+
     if (document.getElementById('joinroom' + room_id).reportValidity()) {
         var joinUrl =
             URL +
@@ -471,3 +473,59 @@ function joinBBBRoomFromPage(URL, fullscreen = 0, self) {
 
     return false
 }
+
+function vcbbbFlagEmptyGuestName(form) {
+    var nameInput = form.find('input[name="bbb_meeting_username"]').filter('[type!="hidden"]')
+    if (!nameInput.length) {
+        return
+    }
+    if (!String(nameInput.val() || '').trim()) {
+        nameInput.addClass('vcbbb-field-invalid')
+    } else {
+        nameInput.removeClass('vcbbb-field-invalid')
+    }
+}
+
+function vcbbbGuestViewRecordings(URL, self) {
+    var req_form = jQuery(self).parents('form')
+    var codeInput = req_form.find('input[name="bbb_meeting_access_code"]').filter('[type!="hidden"]')
+    var code = String(codeInput.val() || '')
+    if (!code.trim()) {
+        codeInput.addClass('vcbbb-field-invalid')
+        return false
+    }
+    codeInput.removeClass('vcbbb-field-invalid')
+
+    var room_id = req_form.find('input[name="room_id"]').val()
+    var username = req_form.find('input[name="bbb_meeting_username"]').val()
+    var joinUrl =
+        URL +
+        '&room_id=' +
+        encodeURIComponent(room_id || '') +
+        '&vcbbb_view_recordings=1' +
+        '&bbb_meeting_access_code=' +
+        encodeURIComponent(code) +
+        '&bbb_meeting_username=' +
+        encodeURIComponent(username || '')
+
+    window.open(joinUrl, '_self')
+    return false
+}
+
+jQuery(function ($) {
+    function vcbbbSyncAccessCodeBorder(input) {
+        input.classList.toggle('vcbbb-field-invalid', !String(input.value || '').trim())
+    }
+
+    $('input[name="bbb_meeting_access_code"]').filter('[type!="hidden"]').each(function () {
+        vcbbbSyncAccessCodeBorder(this)
+    }).on('input', function () {
+        vcbbbSyncAccessCodeBorder(this)
+    })
+
+    $('input[name="bbb_meeting_username"]').filter('[type!="hidden"]').on('input', function () {
+        if (String(this.value || '').trim()) {
+            this.classList.remove('vcbbb-field-invalid')
+        }
+    })
+})

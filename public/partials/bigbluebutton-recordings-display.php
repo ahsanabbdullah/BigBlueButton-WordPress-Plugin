@@ -78,7 +78,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="flex-row flex-row-<?php echo esc_attr( $columns ); ?>" role="cell">
 						<div id="bbb-recording-links-block-<?php echo esc_attr( $vcbbb_recording->recordID ); ?>" class="bbb-recording-link-block" style="<?php echo ( $vcbbb_recording->published == 'false' ? 'display:none;' : '' ); ?>">
 							<?php if ( ! empty( $vcbbb_recording_url ) ) : ?>
-								<button class="vcbbb-button vcbbb-btn-join button button-primary" onclick="window.open('<?php echo esc_url( $vcbbb_recording_url ); ?>', '_blank')"><?php esc_html_e( 'View Recording', 'video-conferencing-with-bbb' ); ?></button>
+								<button type="button" class="bbb-button bbb-btn-join vcbbb-button vcbbb-btn-join vcbbb-view-recording button button-primary" onclick="window.open('<?php echo esc_url( $vcbbb_recording_url ); ?>', '_blank')"><?php esc_html_e( 'View Recording', 'video-conferencing-with-bbb' ); ?></button>
 							<?php endif; ?>
 						</div>
 					</div>

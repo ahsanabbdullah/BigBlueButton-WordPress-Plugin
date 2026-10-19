@@ -6,7 +6,7 @@ Tags: virtual classroom, video conference, BigBlueButton, BBB, online meeting, w
 Requires at least: 5.1  
 Tested up to: 7.1.2
 Requires PHP: 7.2  
-Stable tag: 3.2.20
+Stable tag: 3.2.21
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -135,6 +135,12 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 8. BBB Rooms can also be organized using Categories.
 
 ## Changelog ##
+
+### 3.2.21 ###
+* Added: In guest mode, View Recording on the first screen opens the room and its recordings with a valid access code. A name is not required, and the meeting does not start.
+* Added: An empty Access Code shows a red ring and the placeholder "Enter a room access code". Join Here or Join Fullscreen with an empty Name turns that box red. A filled box uses a soft black ring.
+* Fixed: The recordings table View Recording button stays visible and fits on one line.
+* Added: Join Here, Join Fullscreen, View Recording, and the recording manage icons lift slightly when the mouse moves over them.
 
 ### 3.2.20 ###
 * Fixed: Guest access-code users start the meeting on the first Join click. They are no longer sent back to the room form to click Join again.

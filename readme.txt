@@ -191,8 +191,6 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 * Added: An empty Access Code shows a red ring and the placeholder "Enter a room access code". Join Here or Join Fullscreen with an empty Name turns that box red. A filled box uses a soft black ring.
 * Fixed: The recordings table View Recording button stays visible and fits on one line.
 * Added: Join Here, Join Fullscreen, View Recording, and the recording manage icons lift slightly when the mouse moves over them.
-
-= 3.2.20 =
 * Fixed: Guest access-code users start the meeting on the first Join click. They are no longer sent back to the room form to click Join again.
 
 = 3.2.19 =

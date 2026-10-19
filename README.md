@@ -6,7 +6,7 @@ Tags: virtual classroom, video conference, BigBlueButton, BBB, online meeting, w
 Requires at least: 5.1  
 Tested up to: 7.1.2
 Requires PHP: 7.2  
-Stable tag: 3.2.19
+Stable tag: 3.2.20
 License: GPLv2 or later  
 License URI: http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -135,6 +135,9 @@ Yes. Setup is straightforward: activate the free base plugin, connect your BigBl
 8. BBB Rooms can also be organized using Categories.
 
 ## Changelog ##
+
+### 3.2.20 ###
+* Fixed: Guest access-code users start the meeting on the first Join click. They are no longer sent back to the room form to click Join again.
 
 ### 3.2.19 ###
 * Added: Shortcodes page shows the Pro one-room duration shortcode. It uses the PRO tag and cannot be copied while the free plugin is active.

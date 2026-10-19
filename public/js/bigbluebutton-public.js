@@ -441,7 +441,7 @@ function joinBBBRoomFromPage(URL, fullscreen = 0, self) {
         var target = '_self'
     }
 
-    if (requiresAuth && !guestAuthenticated) {
+    if (requiresAuth && !guestAuthenticated && !fullscreen) {
         target = '_self'
     }
 

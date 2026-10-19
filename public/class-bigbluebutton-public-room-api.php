@@ -111,22 +111,20 @@ class VCBBB_Public_Room_Api {
 				&& ! ( ( $room_post = get_post( $room_id ) ) && $room_post->post_author == $user->ID )
 			);
 
-			if ( $is_access_code_guest ) {
-				$wants_join_meeting = isset( $_GET['vcbbb_join_meeting'] ) && '1' === sanitize_text_field( wp_unslash( $_GET['vcbbb_join_meeting'] ) );
-				$has_recording_access = VCBBB_Tokens_Helper::is_authenticated_access_code_guest( $room_id );
-
-				if ( ! $wants_join_meeting || ! $has_recording_access ) {
-					$guest_session = VCBBB_Tokens_Helper::create_guest_room_session( $room_id, $username, $entry_code );
-					wp_safe_redirect(
-						add_query_arg(
-							array(
-								'vcbbb_guest_session' => $guest_session,
-								'room_id'             => $room_id,
-							),
-							$return_url
-						)
+			if ( $is_access_code_guest && ! VCBBB_Tokens_Helper::is_authenticated_access_code_guest( $room_id ) ) {
+				// First Join Here / Join Fullscreen click used to return to the room form.
+				// Keep the guest session, then continue into the meeting on this same request.
+				$guest_session = VCBBB_Tokens_Helper::create_guest_room_session( $room_id, $username, $entry_code );
+				if ( '' !== $guest_session ) {
+					$_REQUEST['vcbbb_guest_session'] = $guest_session;
+					$_GET['vcbbb_guest_session']     = $guest_session;
+					$return_url                      = add_query_arg(
+						array(
+							'vcbbb_guest_session' => $guest_session,
+							'room_id'             => $room_id,
+						),
+						$return_url
 					);
-					exit;
 				}
 			}
 
